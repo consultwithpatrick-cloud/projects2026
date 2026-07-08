@@ -1,0 +1,3478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="robots" id="robots-meta" content="noindex, nofollow">
+<meta name="description" content="The Millionaire Engine: a private, PIN-locked personal finance tracker. Budget with discipline and see where every peso goes. Free 1-month demo; your data stays on your device.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="The Millionaire Engine">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#205055">
+<meta name="referrer" content="no-referrer">
+<title>The Millionaire Engine</title>
+<!-- Open Graph / Twitter: shared links render a clean preview card -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Millionaire Engine">
+<meta property="og:title" content="The Millionaire Engine">
+<meta property="og:description" content="A private, PIN-locked personal finance tracker. Budget with discipline and see where every peso goes. Free 1-month demo; your data stays on your device.">
+<meta property="og:image" content="https://storage.googleapis.com/www.patrickjosephpanuncillon.com/engine-demo/icon-512.png?v=4">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
+<meta property="og:url" content="https://storage.googleapis.com/www.patrickjosephpanuncillon.com/engine-demo/millionaire-engine.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="The Millionaire Engine">
+<meta name="twitter:description" content="A private, PIN-locked personal finance tracker. Free 1-month demo; your data stays on your device.">
+<meta name="twitter:image" content="https://storage.googleapis.com/www.patrickjosephpanuncillon.com/engine-demo/icon-512.png?v=4">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=4">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=4">
+<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Pirata+One&family=Metamorphous&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js" integrity="sha384-HZZ/fukV+9G8gwTNjN7zQDG0Sp7MsZy5DDN6VfY3Be7V9dvQpEpR2jF2HlyFUUjU" crossorigin="anonymous" defer></script>
+
+<style>
+  :root {
+    --bg: #1a4044;
+    --surface: #205055;
+    --surface-2: #2a6166;
+    --surface-3: #356f74;
+    --cream: #F5E9D4;
+    --cream-dim: #d8c9b0;
+    --text: #F5E9D4;
+    --text-dim: rgba(245, 233, 212, 0.65);
+    --text-subtle: rgba(245, 233, 212, 0.45);
+    --accent-warm: #E8B872;
+    --accent-warm-dim: rgba(232, 184, 114, 0.15);
+    --accent-coral: #E07856;
+    --accent-coral-dim: rgba(224, 120, 86, 0.15);
+    --accent-sage: #8BBF9F;
+    --accent-sage-dim: rgba(139, 191, 159, 0.15);
+    --accent-red: #D45A5A;
+    --accent-red-dim: rgba(212, 90, 90, 0.15);
+    --accent-yellow: #E8C865;
+    --accent-yellow-dim: rgba(232, 200, 101, 0.18);
+    --divider: rgba(245, 233, 212, 0.08);
+    --shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
+  input, textarea, .selectable { -webkit-user-select: text; user-select: text; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    overscroll-behavior: none;
+    min-height: 100vh;
+  }
+  body { padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom); }
+  /* Subtle Eye-of-Horus sigil behind the whole app */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: url("eye-of-horus.svg") no-repeat center 16%;
+    background-size: 86vw auto;
+    opacity: 0.08;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  /* === Header === */
+  .header {
+    padding: 18px 20px 14px;
+    position: sticky; top: 0;
+    background: var(--bg);
+    z-index: 10;
+    border-bottom: 1px solid var(--divider);
+  }
+  .header-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .header-title-block { flex: 1; min-width: 0; }
+  .header-title {
+    font-family: 'Cinzel Decorative', 'Cinzel', Georgia, serif;
+    font-size: 16px; font-weight: 700; letter-spacing: 0; color: var(--cream); white-space: nowrap;
+    display: flex; align-items: baseline; gap: 8px;
+  }
+  .version-pill {
+    display: inline-block;
+    background: var(--accent-warm);
+    color: #1a4044;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 8px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    vertical-align: middle;
+    line-height: 1.4;
+  }
+  .header-sub { font-size: 13px; color: var(--text-dim); margin-top: 2px; text-transform: uppercase; letter-spacing: 1px; }
+  .header-byline {
+    margin-top: 4px;
+    font-family: 'Cormorant Garamond', Garamond, Georgia, serif;
+    font-style: italic;
+    color: var(--accent-warm);
+    opacity: 0.85;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+  }
+  .icon-btn {
+    background: var(--surface-2);
+    border: none;
+    color: var(--cream);
+    width: 38px; height: 38px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .icon-btn:active { transform: scale(0.92); background: var(--surface-3); }
+  .icon-btn.spinning svg { animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .content { padding: 16px 16px 100px; }
+
+  /* === KPI === */
+  /* Contained, swipable month panel (KPI cards). touch-action keeps horizontal swipes ours and vertical scroll native. */
+  .kpi-panel { background: var(--surface-2); border-radius: 16px; padding: 10px 10px 12px; margin-bottom: 22px; overflow: hidden; touch-action: pan-y; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05); }
+  .kpi-nav { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+  .kpi-nav-title { flex: 1; text-align: center; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim); user-select: none; }
+  .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; transition: transform .2s ease, opacity .2s ease; will-change: transform, opacity; }
+  .kpi-grid.kpi-noanim { transition: none !important; }
+  .kpi-grid.kpi-out-left { transform: translateX(-9%); opacity: 0; }
+  .kpi-grid.kpi-out-right { transform: translateX(9%); opacity: 0; }
+  .kpi-grid.kpi-in-left { transform: translateX(-9%); opacity: 0; }
+  .kpi-grid.kpi-in-right { transform: translateX(9%); opacity: 0; }
+  .kpi {
+    background: var(--surface);
+    border-radius: 18px;
+    padding: 16px 14px;
+    position: relative; overflow: hidden;
+    transition: transform 0.15s ease;
+  }
+  .kpi:active { transform: scale(0.98); }
+  .kpi-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); font-weight: 600; margin-bottom: 6px; }
+  .kpi-value { font-size: 24px; font-weight: 700; color: var(--cream); letter-spacing: -0.5px; line-height: 1.1; }
+  .kpi-sub { font-size: 11px; color: var(--text-subtle); margin-top: 6px; }
+  .kpi.income { background: linear-gradient(135deg, var(--surface) 0%, #2d6e58 100%); }
+  .kpi.expense { background: linear-gradient(135deg, var(--surface) 0%, #6e4540 100%); }
+  .kpi.overdue { background: linear-gradient(135deg, var(--surface) 0%, var(--accent-red) 110%); }
+  .kpi.overdue.zero { background: var(--surface); }
+  .kpi.due { background: linear-gradient(135deg, var(--surface) 0%, #7c6520 100%); }
+  .kpi.due.zero { background: var(--surface); }
+  .kpi.upcoming { background: linear-gradient(135deg, var(--surface) 0%, #3f5450 100%); }
+  .kpi.upcoming.zero { background: var(--surface); }
+  .kpi-skeleton { background: var(--surface-2); border-radius: 6px; height: 22px; width: 70%; animation: pulse 1.2s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.9; } }
+
+  /* === Section === */
+  .section { margin-bottom: 22px; }
+  .section-title {
+    font-family: inherit;   /* match the header date font (system sans), just bold */
+    font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-dim);
+    font-weight: 700; margin: 0 4px 10px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .section-title .count {
+    background: var(--surface-2); border-radius: 12px; padding: 2px 10px; font-size: 11px; color: var(--cream);
+  }
+
+  /* === Custom Entry CTA === */
+  .custom-entry-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent-warm) 0%, #D49856 100%);
+    color: #1a4044;
+    border: none;
+    padding: 20px 22px;
+    border-radius: 20px;
+    font-size: 16px; font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.15s ease;
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 10px;
+    font-family: inherit;
+    box-shadow: 0 6px 20px rgba(232, 184, 114, 0.25);
+  }
+  .custom-entry-btn:active { transform: scale(0.97); box-shadow: 0 4px 12px rgba(232, 184, 114, 0.18); }
+  .custom-entry-btn .ico-big {
+    font-size: 28px; line-height: 1;
+    background: rgba(26, 64, 68, 0.18);
+    width: 50px; height: 50px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .custom-entry-btn .ce-text { flex: 1; text-align: left; }
+  .custom-entry-btn .ce-title { font-size: 16px; font-weight: 700; }
+  .custom-entry-btn .ce-sub { font-size: 12px; opacity: 0.75; font-weight: 500; margin-top: 2px; }
+  .custom-entry-btn .ce-arrow { font-size: 22px; opacity: 0.6; }
+
+  /* === Quick Log === */
+  .quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .quick-btn {
+    background: var(--surface); border: none; color: var(--cream);
+    padding: 18px 16px; border-radius: 18px;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer; text-align: left;
+    transition: transform 0.12s ease, background 0.15s ease;
+    display: flex; flex-direction: column; gap: 4px;
+    font-family: inherit;
+  }
+  .quick-btn:active { transform: scale(0.97); background: var(--surface-2); }
+  .quick-btn .ico { font-size: 24px; line-height: 1; margin-bottom: 4px; }
+  .quick-btn .label { font-size: 14px; font-weight: 600; }
+  .quick-btn .amt { font-size: 12px; color: var(--text-dim); font-weight: 500; }
+
+  /* === Upcoming === */
+  .upcoming-list { background: var(--surface); border-radius: 18px; overflow: hidden; }
+  .upcoming-item {
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--divider);
+  }
+  .upcoming-item:last-child { border-bottom: none; }
+  .upcoming-inner {
+    position: relative; z-index: 2;
+    display: flex; align-items: center;
+    padding: 14px 16px 14px 12px;
+    gap: 12px;
+    border-left: 4px solid transparent;
+    background: var(--surface);
+    transition: background 0.15s ease;
+  }
+  .upcoming-item:active .upcoming-inner { background: var(--surface-2); }
+  .upcoming-item.sev-red .upcoming-inner { border-left-color: var(--accent-red); background: linear-gradient(90deg, var(--accent-red-dim) 0%, transparent 30%), var(--surface); }
+  .upcoming-item.sev-orange .upcoming-inner { border-left-color: var(--accent-coral); background: linear-gradient(90deg, var(--accent-coral-dim) 0%, transparent 30%), var(--surface); }
+  .upcoming-item.sev-yellow .upcoming-inner { border-left-color: var(--accent-yellow); background: linear-gradient(90deg, var(--accent-yellow-dim) 0%, transparent 30%), var(--surface); }
+  .upcoming-item.sev-neutral .upcoming-inner { border-left-color: var(--accent-sage); }
+  /* Swipe-to-settle: colored panels sit behind the sliding inner; the label shows in the revealed gap */
+  .swipe-action {
+    position: absolute; inset: 0; z-index: 1;
+    display: flex; align-items: center;
+    padding: 0 26px;
+    font-family: inherit; font-weight: 700;
+    font-size: 15px; letter-spacing: 0.3px;
+    opacity: 0; transition: opacity 0.16s ease;
+  }
+  .swipe-action .sa-label { white-space: nowrap; transform: scale(0.92); transition: transform 0.16s ease; }
+  .swipe-action.paid { justify-content: flex-start; color: #07261f; background: linear-gradient(90deg, #8BBF9F 0%, #74b48a 100%); }
+  .swipe-action.del { justify-content: flex-end; color: #fff4f1; background: linear-gradient(90deg, #b13a2d 0%, #C0392B 100%); }
+  .upcoming-item.show-paid .swipe-action.paid { opacity: 1; }
+  .upcoming-item.show-del .swipe-action.del { opacity: 1; }
+  .upcoming-item.armed .swipe-action .sa-label { transform: scale(1.06); }
+  .upcoming-date { flex-shrink: 0; width: 52px; text-align: center; color: var(--cream-dim); }
+  .upcoming-date .day { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-subtle); font-weight: 600; }
+  .upcoming-date .num { font-size: 22px; font-weight: 700; color: var(--cream); line-height: 1.1; }
+  .upcoming-body { flex: 1; min-width: 0; }
+  .upcoming-meta { font-size: 11px; color: var(--text-subtle); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .upcoming-right {
+    display: flex; flex-direction: column; align-items: flex-end; gap: 6px;
+    flex-shrink: 0;
+  }
+  .upcoming-amount { text-align: right; font-size: 15px; font-weight: 700; letter-spacing: -0.3px; }
+  .upcoming-amount.sev-red { color: var(--accent-red); }
+  .upcoming-amount.sev-orange { color: var(--accent-coral); }
+  .upcoming-amount.sev-yellow { color: var(--accent-yellow); }
+  .upcoming-amount.sev-neutral { color: var(--accent-warm); }
+
+  /* Pay button, inline pill */
+  .pay-btn {
+    background: var(--accent-sage);
+    color: #1a4044;
+    border: none;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 11px;
+    border-radius: 12px;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    font-family: inherit;
+    transition: transform 0.12s ease, background 0.15s ease, opacity 0.2s ease, width 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 2px 8px rgba(139, 191, 159, 0.3);
+    min-width: 56px;
+    justify-content: center;
+  }
+  .pay-btn:active { transform: scale(0.92); background: #7AAE8D; }
+  .pay-btn.loading {
+    background: var(--surface-3);
+    color: var(--text-dim);
+    cursor: wait;
+    box-shadow: none;
+  }
+  .pay-btn.loading::after {
+    content: '';
+    width: 10px; height: 10px;
+    border: 2px solid var(--text-dim);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    margin-left: 4px;
+  }
+  .pay-btn.success {
+    background: var(--accent-sage);
+    color: #1a4044;
+    pointer-events: none;
+    box-shadow: 0 2px 12px rgba(139, 191, 159, 0.5);
+  }
+
+  /* Optimistic paid-state row */
+  .upcoming-item.paying {
+    transition: all 0.4s cubic-bezier(0.25, 0.85, 0.35, 1);
+  }
+  .upcoming-item.paid-flash .upcoming-inner {
+    background: linear-gradient(90deg, rgba(139, 191, 159, 0.25) 0%, rgba(139, 191, 159, 0.05) 100%), var(--surface) !important;
+    border-left-color: var(--accent-sage) !important;
+  }
+  .upcoming-item.paid-flash .upcoming-item-name {
+    color: var(--accent-sage);
+    text-decoration: line-through;
+    text-decoration-color: rgba(139, 191, 159, 0.5);
+  }
+  .upcoming-item.paid-flash .upcoming-amount { color: var(--accent-sage); }
+  .upcoming-item.removing {
+    opacity: 0;
+    transform: translateX(20px) scale(0.96);
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin: 0;
+    border-bottom-width: 0;
+    overflow: hidden;
+  }
+  .upcoming-item-name { font-size: 14px; font-weight: 600; color: var(--cream); margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; transition: color 0.3s ease; }
+
+  .upcoming-empty { padding: 32px 20px; text-align: center; color: var(--text-subtle); font-size: 13px; }
+  .upcoming-empty .check { color: var(--accent-sage); font-size: 22px; margin-bottom: 6px; }
+
+  .badge {
+    display: inline-block; padding: 1px 7px; border-radius: 8px;
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+    vertical-align: middle;
+  }
+  .badge.priority { background: var(--accent-red-dim); color: var(--accent-red); }
+  .badge.unpaid { background: var(--accent-coral-dim); color: var(--accent-coral); }
+  .badge.pending { background: var(--accent-yellow-dim); color: var(--accent-yellow); }
+  .badge.fintech-tag { background: rgba(212, 90, 90, 0.12); color: rgba(212, 90, 90, 0.85); font-size: 9px; padding: 1px 5px; border-radius: 4px; }
+
+  /* === Charts === */
+  .chart-card { background: var(--surface); border-radius: 18px; padding: 16px 14px; margin-bottom: 10px; }
+  .chart-title { font-family: inherit; font-size: 13px; font-weight: 700; color: var(--cream); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .chart-sub { font-size: 11px; color: var(--text-dim); margin-bottom: 12px; }
+  .chart-wrap { position: relative; height: 200px; }
+  .chart-wrap.tall { height: 240px; }
+  .filter-bar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .filter-chip {
+    background: var(--surface-2); color: var(--cream); border: 1px solid transparent;
+    padding: 6px 14px; border-radius: 14px;
+    font-size: 12px; font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: inherit;
+  }
+  .filter-chip:active { transform: scale(0.95); }
+  .filter-chip.active { background: var(--accent-warm); color: #1a4044; }
+
+  /* === Modal === */
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+    z-index: 100; display: none;
+    animation: fadeIn 0.2s ease;
+  }
+  .modal-backdrop.open { display: flex; align-items: flex-end; justify-content: center; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal {
+    background: var(--surface); width: 100%; max-width: 480px;
+    border-radius: 24px 24px 0 0;
+    padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
+    max-height: 90vh; overflow-y: auto;
+    animation: slideUp 0.25s cubic-bezier(0.2, 0.9, 0.3, 1);
+  }
+  @keyframes slideUp { from { transform: translateY(20%); opacity: 0.5; } to { transform: translateY(0); opacity: 1; } }
+  .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .modal-title { font-size: 18px; font-weight: 700; color: var(--cream); }
+  .modal-close { background: var(--surface-2); border: none; color: var(--cream); width: 32px; height: 32px; border-radius: 50%; font-size: 18px; cursor: pointer; }
+  .form-row { margin-bottom: 14px; }
+  .form-label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); font-weight: 600; margin-bottom: 6px; }
+  .form-input, .form-select {
+    width: 100%;
+    background: var(--bg); border: 1px solid var(--divider);
+    color: var(--cream); padding: 14px 14px; border-radius: 12px;
+    font-size: 16px; font-family: inherit;
+    -webkit-appearance: none; appearance: none;
+  }
+  .form-input:focus, .form-select:focus { outline: none; border-color: var(--accent-warm); }
+  .form-select {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='%23F5E9D4' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center; padding-right: 38px;
+  }
+  .btn-primary {
+    width: 100%; background: var(--accent-warm); color: #1a4044; border: none;
+    padding: 16px; border-radius: 14px;
+    font-size: 16px; font-weight: 700;
+    cursor: pointer; transition: transform 0.12s ease, background 0.15s ease;
+    font-family: inherit;
+  }
+  .btn-primary:active { transform: scale(0.98); background: #d4a056; }
+  .btn-primary:disabled { background: var(--surface-3); color: var(--text-subtle); }
+  .btn-secondary {
+    width: 100%; background: var(--surface-2); color: var(--cream); border: none;
+    padding: 14px; border-radius: 12px;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: transform 0.12s ease, background 0.15s ease;
+    font-family: inherit; margin-top: 8px;
+  }
+  .btn-secondary:active { transform: scale(0.98); background: var(--surface-3); }
+  .btn-danger {
+    width: 100%; background: var(--accent-red-dim); color: var(--accent-red); border: 1px solid var(--accent-red);
+    padding: 14px; border-radius: 12px;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: transform 0.12s ease;
+    font-family: inherit; margin-top: 8px;
+  }
+  .btn-danger:active { transform: scale(0.98); background: var(--accent-red); color: var(--cream); }
+
+  /* === Toast === */
+  .toast {
+    position: fixed;
+    bottom: calc(20px + env(safe-area-inset-bottom));
+    left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--surface-3); color: var(--cream);
+    padding: 12px 20px; border-radius: 14px;
+    font-size: 14px; font-weight: 600;
+    box-shadow: var(--shadow);
+    opacity: 0; transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 200; pointer-events: none; max-width: 90%; text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.error { background: var(--accent-red); }
+  .toast.success { background: #2d6e58; }
+
+  .nav-spacer { height: 20px; }
+
+  /* === Lock screen === */
+  .lock-screen, .config-screen {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    z-index: 300;
+    padding: max(20px, env(safe-area-inset-top, 0px)) 22px calc(24px + env(safe-area-inset-bottom, 0px));
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: safe center;
+    overflow-y: auto;
+  }
+  .lock-screen.open, .config-screen.open { display: flex; }
+  .bio-btn {
+    margin-top: 16px; display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(139,191,159,0.14); color: var(--accent-sage, #8BBF9F);
+    border: 1px solid rgba(139,191,159,0.5); border-radius: 26px;
+    padding: 11px 20px; font-size: 14px; font-weight: 700; letter-spacing: 0.3px;
+    cursor: pointer; transition: background .15s ease, transform .1s ease;
+  }
+  .bio-btn:active { transform: scale(0.97); background: rgba(139,191,159,0.24); }
+  .bio-btn .bio-ico { font-size: 17px; }
+  .lock-icon {
+    font-size: 48px;
+    margin-bottom: 14px;
+    background: var(--surface);
+    width: 80px; height: 80px;
+    border-radius: 24px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .lock-title { font-family: 'Cinzel Decorative', 'Cinzel', Georgia, serif; font-size: 17px; font-weight: 700; letter-spacing: 0; margin-bottom: 6px; color: var(--cream); text-align: center; white-space: nowrap; }
+  .lock-sub { font-size: 13px; color: var(--text-dim); margin-bottom: 28px; line-height: 1.5; text-align: center; max-width: 320px; }
+  .pin-dots { display: flex; gap: 14px; margin-bottom: 30px; }
+  .pin-dot {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--surface-3);
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  }
+  .pin-dot.filled { background: var(--accent-warm); border-color: var(--accent-warm); }
+  .pin-dot.error { background: var(--accent-red); border-color: var(--accent-red); animation: shake 0.4s; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+  .keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 76px);
+    grid-gap: 14px;
+    max-width: 300px;
+  }
+  .keypad-btn {
+    background: var(--surface);
+    border: none;
+    color: var(--cream);
+    width: 76px; height: 76px;
+    border-radius: 50%;
+    font-size: 28px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s ease, background 0.15s ease;
+    font-family: inherit;
+  }
+  .keypad-btn:active { transform: scale(0.92); background: var(--surface-2); }
+  .keypad-btn.empty { background: transparent; cursor: default; }
+  .keypad-btn.empty:active { transform: none; }
+  .keypad-btn.action {
+    font-size: 26px;
+    background: var(--surface);
+    color: var(--cream-dim);
+    box-shadow: inset 0 0 0 1.5px rgba(245,233,212,0.14);
+  }
+  .keypad-btn.action:active { background: var(--surface-2); transform: scale(0.92); }
+  .lock-footer {
+    margin-top: 24px;
+    font-size: 11px;
+    color: var(--text-subtle);
+    text-align: center;
+  }
+
+  /* === Config screen === */
+  .config-screen { justify-content: center; padding: 40px 24px; }
+  .config-screen .config-inner { width: 100%; max-width: 480px; margin: auto; }
+  @media (min-height: 700px) {
+    .config-screen { justify-content: center; }
+  }
+  .config-title { font-size: 26px; font-weight: 700; margin-bottom: 8px; color: var(--cream); }
+  .config-sub { font-size: 14px; color: var(--text-dim); margin-bottom: 30px; line-height: 1.5; }
+  .config-note {
+    background: var(--surface);
+    border-left: 3px solid var(--accent-sage);
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    color: var(--cream-dim);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  /* === Settings === */
+  .settings-section { margin-bottom: 22px; }
+  .settings-header {
+    font-size: 12px; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--text-dim); font-weight: 700; margin-bottom: 8px;
+  }
+  .settings-card {
+    background: var(--surface);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .settings-row {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--divider);
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .settings-row:last-child { border-bottom: none; }
+  .settings-row:active { background: var(--surface-2); }
+  .settings-label { font-size: 14px; color: var(--cream); }
+  .settings-value { font-size: 13px; color: var(--text-dim); }
+  .settings-row.danger .settings-label { color: var(--accent-red); }
+  .toggle {
+    position: relative;
+    width: 42px; height: 26px;
+    background: var(--surface-3);
+    border-radius: 13px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  .toggle::after {
+    content: ''; position: absolute;
+    width: 20px; height: 20px;
+    background: var(--cream);
+    border-radius: 50%;
+    top: 3px; left: 3px;
+    transition: transform 0.2s ease;
+  }
+  .toggle.on { background: var(--accent-warm); }
+  .toggle.on::after { transform: translateX(16px); }
+
+  .about-box {
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 20px;
+    text-align: center;
+    margin-top: 12px;
+  }
+  /* .signature-mark base, overridden below in footer block with Playfair Display */
+  .about-owner {
+    font-size: 13px;
+    color: var(--cream);
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+  .about-version {
+    font-size: 11px;
+    color: var(--text-subtle);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* === Footer signature === */
+  .footer-sig {
+    text-align: center;
+    padding: 28px 20px 16px;
+    line-height: 1.7;
+    border-top: 1px solid var(--divider);
+    margin-top: 20px;
+  }
+  .footer-sig .sig-tagline {
+    font-family: 'Cormorant Garamond', 'Garamond', 'Georgia', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--text-subtle);
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+  .footer-sig .sig-name {
+    font-family: 'Cinzel Decorative', 'Cinzel', 'Georgia', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--cream);
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    margin: 2px 0;
+  }
+  .footer-sig .sig-name a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid var(--accent-warm);
+    padding-bottom: 1px;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+  .footer-sig .sig-name a:hover {
+    color: var(--accent-warm);
+  }
+  .footer-sig .sig-entity {
+    font-family: 'Cormorant Garamond', 'Garamond', 'Georgia', serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--cream-dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+  .footer-sig .sig-meta {
+    font-size: 10px;
+    color: var(--text-subtle);
+    letter-spacing: 0.5px;
+    margin-top: 8px;
+    opacity: 0.7;
+  }
+  .footer-sig .sig-divider {
+    width: 32px;
+    height: 1px;
+    background: var(--accent-warm);
+    margin: 10px auto;
+    opacity: 0.5;
+  }
+
+  /* Signature mark used in About + lock screen, same elegant style */
+  .signature-mark {
+    font-family: 'Cinzel', 'Georgia', serif !important;
+    font-size: 16px !important;
+    font-weight: 600;
+    color: var(--cream) !important;
+    letter-spacing: 1.2px;
+    margin: 10px 0 4px !important;
+  }
+  .signature-mark a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid var(--accent-warm);
+    padding-bottom: 1px;
+  }
+
+  @media (max-width: 360px) {
+    .kpi-value { font-size: 20px; }
+    .quick-btn { padding: 14px 12px; }
+    .keypad { grid-template-columns: repeat(3, 66px); grid-gap: 12px; }
+    .keypad-btn { width: 66px; height: 66px; font-size: 24px; }
+  }
+  /* Short screens: scale the PIN page down so the keypad + footer always fit */
+  @media (max-height: 820px) {
+    #lock-screen .lock-logo { width: 96px; height: 96px; margin-bottom: 10px; }
+    .lock-sub { margin-bottom: 16px; }
+    .pin-dots { margin-bottom: 18px; }
+    .keypad { grid-template-columns: repeat(3, 68px); grid-gap: 12px; }
+    .keypad-btn { width: 68px; height: 68px; font-size: 26px; }
+    .keypad-btn.action { font-size: 24px; }
+    .lock-footer { margin-top: 14px; }
+  }
+  @media (max-height: 680px) {
+    #lock-screen .lock-logo { width: 74px; height: 74px; margin-bottom: 8px; }
+    .lock-title { font-size: 16px; }
+    .lock-sub { margin-bottom: 10px; }
+    .pin-dots { margin-bottom: 12px; gap: 12px; }
+    .keypad { grid-template-columns: repeat(3, 60px); grid-gap: 10px; }
+    .keypad-btn { width: 60px; height: 60px; font-size: 24px; }
+    .keypad-btn.action { font-size: 22px; }
+    .lock-footer { margin-top: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== APP MAIN (hidden until unlocked) ========== -->
+<div id="app-main" style="display: none;">
+  <div class="header">
+    <div class="header-row">
+      <div class="header-title-block">
+        <div class="header-title">The Millionaire Engine<span class="version-pill">v3.7</span></div>
+        <div class="header-sub" id="header-date">Loading...</div>
+      </div>
+      <button class="icon-btn" onclick="openSettings()" aria-label="Settings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
+      <button class="icon-btn" id="refresh-btn" onclick="refreshAll()" aria-label="Refresh">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <polyline points="1 20 1 14 7 14"></polyline>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- KPI -->
+    <div class="kpi-panel" id="kpi-panel">
+    <div class="kpi-nav">
+      <button class="cal-arrow" onclick="kpiNav(-1)" aria-label="Previous month">‹</button>
+      <div class="kpi-nav-title" id="kpi-month">This month</div>
+      <button class="cal-arrow" onclick="kpiNav(1)" aria-label="Next month">›</button>
+    </div>
+    <div class="kpi-grid" id="kpi-grid">
+      <div class="kpi income" onclick="openLedger('income')" style="cursor:pointer;">
+        <div class="kpi-label">Income MTD ›</div>
+        <div class="kpi-value" id="kpi-income"><div class="kpi-skeleton"></div></div>
+        <div class="kpi-sub" id="kpi-income-sub">&nbsp;</div>
+      </div>
+      <div class="kpi expense" onclick="openLedger('expense')" style="cursor:pointer;">
+        <div class="kpi-label">Expenses MTD ›</div>
+        <div class="kpi-value" id="kpi-expense"><div class="kpi-skeleton"></div></div>
+        <div class="kpi-sub" id="kpi-expense-sub">&nbsp;</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Net Position</div>
+        <div class="kpi-value" id="kpi-net"><div class="kpi-skeleton"></div></div>
+        <div class="kpi-sub" id="kpi-net-sub">&nbsp;</div>
+      </div>
+      <div class="kpi overdue" id="kpi-overdue-card" onclick="openPaymentsGroup('overdue')" style="cursor:pointer;">
+        <div class="kpi-label">Overdue</div>
+        <div class="kpi-value" id="kpi-overdue"><div class="kpi-skeleton"></div></div>
+        <div class="kpi-sub" id="kpi-overdue-sub">&nbsp;</div>
+      </div>
+      <div class="kpi due" id="kpi-due-card" onclick="openPaymentsGroup('due')" style="cursor:pointer;">
+        <div class="kpi-label">Due This Week</div>
+        <div class="kpi-value" id="kpi-due"><div class="kpi-skeleton"></div></div>
+        <div class="kpi-sub" id="kpi-due-sub">&nbsp;</div>
+      </div>
+      <div class="kpi upcoming" id="kpi-upcoming-card" onclick="openPaymentsGroup('upcoming')" style="cursor:pointer;">
+        <div class="kpi-label">Upcoming</div>
+        <div class="kpi-value" id="kpi-upcoming"><div class="kpi-skeleton"></div></div>
+        <div class="kpi-sub" id="kpi-upcoming-sub">&nbsp;</div>
+      </div>
+    </div>
+    </div>
+
+    <!-- Money Map, cash-flow overview -->
+    <div class="section">
+      <div class="section-title"><span>🗺️ Money Map</span><span class="count" id="mm-month">-</span></div>
+      <div class="chart-card mm-card">
+        <div class="mm-flow">
+          <div class="mm-node mm-in"><span class="mm-k">In</span><span class="mm-v" id="mm-in">-</span></div>
+          <span class="mm-arrow">→</span>
+          <div class="mm-node mm-out"><span class="mm-k">Out</span><span class="mm-v" id="mm-out">-</span></div>
+          <span class="mm-arrow">→</span>
+          <div class="mm-node mm-net"><span class="mm-k">Net</span><span class="mm-v" id="mm-net">-</span></div>
+        </div>
+        <div class="mm-bar"><div class="mm-bar-in" id="mm-bar-in"></div><div class="mm-bar-out" id="mm-bar-out"></div></div>
+        <div class="mm-where">Where it flows</div>
+        <div class="mm-cats" id="mm-cats"><div class="upcoming-empty" style="padding:10px;">Loading…</div></div>
+      </div>
+    </div>
+
+    <!-- Log Now -->
+    <div class="section">
+      <div class="section-title"><span>⚡ Log Now</span></div>
+      <button class="custom-entry-btn" onclick="openCustomLog()">
+        <span class="ico-big">✏️</span>
+        <span class="ce-text">
+          <div class="ce-title">Custom Entry</div>
+          <div class="ce-sub">Log any transaction, full form</div>
+        </span>
+        <span class="ce-arrow">›</span>
+      </button>
+      <div class="quick-grid">
+        <button class="quick-btn" onclick="quickLog('Gas', 'Gas / Fuel', 1000)">
+          <span class="ico">⛽</span><span class="label">Gas</span><span class="amt">₱1,000</span>
+        </button>
+        <button class="quick-btn" onclick="quickLog('Groceries - Weekly', 'Needs (Variable)', 5000)">
+          <span class="ico">🛒</span><span class="label">Groceries</span><span class="amt">₱5,000</span>
+        </button>
+        <button class="quick-btn" onclick="quickLog('Family Dining', 'Family Dining', 1500)">
+          <span class="ico">🍽️</span><span class="label">Family Dining</span><span class="amt">₱1,500</span>
+        </button>
+        <button class="quick-btn" onclick="quickLog('Coffee / Snacks', 'Patrick Expense', 300)">
+          <span class="ico">☕</span><span class="label">Coffee</span><span class="amt">₱300</span>
+        </button>
+        <button class="quick-btn" onclick="quickLog('Family Support', 'Family Support', 1000)">
+          <span class="ico">👪</span><span class="label">Family Support</span><span class="amt">₱1,000</span>
+        </button>
+        <button class="quick-btn" onclick="openCustomLog()">
+          <span class="ico">💸</span><span class="label">Other Expenses</span><span class="amt">Log anything</span>
+        </button>
+      </div>
+      <div class="quick-grid" style="margin-top:8px;">
+        <button class="quick-btn uc" onclick="comingSoon('📸 Snap Receipt', 'Snap a photo of a shopping receipt and the app reads the items and amounts, then logs them for you automatically. This feature is under construction.')">
+          <span class="ico">📸</span><span class="label">Snap Receipt</span><span class="amt">🚧 Under construction</span>
+        </button>
+        <button class="quick-btn uc" onclick="comingSoon('🧺 Grocery Day', 'Snap prices while you shop, the app builds a grocery list and a summary for the day, logged automatically. This feature is under construction.')">
+          <span class="ico">🧺</span><span class="label">Grocery Day</span><span class="amt">🚧 Under construction</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Next 7 Days -->
+    <div class="section">
+      <div class="section-title">
+        <span>⏰ Payments</span>
+        <span class="count" id="upcoming-count">-</span>
+      </div>
+      <div class="upcoming-list" id="upcoming-list">
+        <div class="upcoming-empty"><div>Loading upcoming bills...</div></div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="section">
+      <div class="section-title"><span>📊 Monthly Trends</span></div>
+      <div class="filter-bar" id="chart-filter">
+        <button class="filter-chip" data-months="3" onclick="setChartMonths(3)">3 mo</button>
+        <button class="filter-chip active" data-months="6" onclick="setChartMonths(6)">6 mo</button>
+        <button class="filter-chip" data-months="12" onclick="setChartMonths(12)">12 mo</button>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Income vs Expenses</div>
+        <div class="chart-sub" id="chart-sub-1">Last 6 months</div>
+        <div class="chart-wrap tall"><canvas id="chart-monthly"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Category Breakdown, Current Month</div>
+        <div class="chart-sub" id="chart-sub-2">Where money went this month</div>
+        <div class="filter-bar">
+          <button class="filter-chip active" data-cat-status="Paid" onclick="setCatStatus('Paid')">Paid</button>
+          <button class="filter-chip" data-cat-status="Pending" onclick="setCatStatus('Pending')">Pending</button>
+          <button class="filter-chip" data-cat-status="All" onclick="setCatStatus('All')">All</button>
+        </div>
+        <div class="chart-wrap tall"><canvas id="chart-categories"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Month-to-date calendar -->
+    <div class="section">
+      <div class="section-title"><span>🗓️ Calendar · Daily In / Out</span></div>
+      <div class="chart-card">
+        <div class="cal-head"><button class="cal-arrow" onclick="calNav(-1)" aria-label="Previous month">‹</button><div class="chart-title" id="cal-title">This month</div><button class="cal-arrow" onclick="calNav(1)" aria-label="Next month">›</button></div>
+        <div class="chart-sub">Green = in · Red = out · Gold = upcoming. Swipe or tap ‹ › to change month.</div>
+        <div class="cal-grid" id="calendar"><div class="upcoming-empty">Loading…</div></div>
+      </div>
+    </div>
+
+    <!-- Signature footer -->
+    <div class="footer-sig">
+      <div class="sig-name">The Millionaire Engine</div>
+      <div class="sig-divider"></div>
+      <div class="sig-tagline">Developed by</div>
+      <div class="sig-script"><a href="https://www.google.com/search?q=Patrick+Panuncillon" target="_blank" rel="noopener noreferrer"><span class="logo-p">₱</span>atrick <span class="logo-p">₱</span>anuncillon</a></div>
+      <div class="sig-entity" style="font-family:'Metamorphous','Cinzel',Georgia,serif; font-weight:400; font-size:15px; letter-spacing:3px; text-transform:none; line-height:1.35;">MLC.AI</div>
+      <div class="sig-meta">MLC.AI · v3.7 · © 2026 · End-to-end encrypted</div>
+    </div>
+
+    <div class="nav-spacer"></div>
+  </div>
+</div>
+
+<!-- ========== LOCK SCREEN ========== -->
+<div class="lock-screen" id="lock-screen">
+  <img class="lock-logo" src="icon-512.png?v=4" alt="The Millionaire Engine">
+  <div class="lock-title" id="lock-title">The Millionaire Engine</div>
+  <div id="lock-version" style="font-size: 12px; color: var(--text-subtle); margin-top: -2px; margin-bottom: 4px; letter-spacing: 1px;">v3.7</div>
+  <div class="lock-sub" id="lock-sub">Enter your 4-digit PIN to unlock</div>
+
+  <div class="pin-dots" id="pin-dots">
+    <div class="pin-dot"></div>
+    <div class="pin-dot"></div>
+    <div class="pin-dot"></div>
+    <div class="pin-dot"></div>
+  </div>
+
+  <div class="keypad" id="keypad">
+    <button class="keypad-btn" onclick="pinPress('1')">1</button>
+    <button class="keypad-btn" onclick="pinPress('2')">2</button>
+    <button class="keypad-btn" onclick="pinPress('3')">3</button>
+    <button class="keypad-btn" onclick="pinPress('4')">4</button>
+    <button class="keypad-btn" onclick="pinPress('5')">5</button>
+    <button class="keypad-btn" onclick="pinPress('6')">6</button>
+    <button class="keypad-btn" onclick="pinPress('7')">7</button>
+    <button class="keypad-btn" onclick="pinPress('8')">8</button>
+    <button class="keypad-btn" onclick="pinPress('9')">9</button>
+    <button class="keypad-btn empty"></button>
+    <button class="keypad-btn" onclick="pinPress('0')">0</button>
+    <button class="keypad-btn action" onclick="pinBackspace()">⌫</button>
+  </div>
+
+  <button id="bio-unlock-btn" class="bio-btn" style="display:none;" onclick="unlockWithBiometrics()">
+    <span class="bio-ico">🔓</span> Unlock with biometrics
+  </button>
+
+  <div class="lock-footer" id="lock-footer">
+    <div id="lock-eyebrow" style="font-family: 'Cormorant Garamond', Garamond, serif; font-size: 10px; color: var(--text-subtle); letter-spacing: 1.6px; text-transform: uppercase; margin-bottom: 2px;">Developed by</div>
+    <div class="sig-script"><a href="https://www.google.com/search?q=Patrick+Panuncillon" target="_blank" rel="noopener noreferrer"><span class="logo-p">₱</span>atrick <span class="logo-p">₱</span>anuncillon</a></div>
+    <div style="font-family:'Metamorphous','Cinzel',Georgia,serif; font-weight:400; font-size:16px; color:var(--cream-dim); letter-spacing:3px; margin-top:3px; margin-bottom:8px; line-height:1.35;">MLC.AI</div>
+    <div style="opacity: 0.6;">End-to-end encrypted on this device</div>
+  </div>
+</div>
+
+<!-- ========== CONFIG SCREEN (first run) ========== -->
+<div class="config-screen" id="config-screen">
+  <div class="config-inner">
+    <div class="config-title">Setup The Millionaire Engine</div>
+    <div style="font-size: 12px; color: var(--text-subtle); margin-bottom: 14px; letter-spacing: 1px; text-transform: uppercase;">v3.7 · by Patrick Panuncillon</div>
+    <div class="config-sub">Securely connect this device to your Millionaire Engine spreadsheet.</div>
+
+    <div class="config-note">
+      🔒 <strong>Your data is encrypted on this device.</strong> The webhook URL and secret you enter below are AES-256 encrypted with your PIN before being stored. They're never sent anywhere except your own Google Sheet.
+    </div>
+
+    <div id="config-step-1">
+      <div class="form-row">
+        <label class="form-label">Webhook URL</label>
+        <input type="text" class="form-input selectable" id="cfg-url" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="off" autocapitalize="off" spellcheck="false">
+      </div>
+      <div class="form-row">
+        <label class="form-label">Webhook Secret</label>
+        <input type="password" class="form-input selectable" id="cfg-secret" placeholder="Your secret token" autocomplete="off">
+      </div>
+      <button class="btn-primary" onclick="configStep1Next()">Continue →</button>
+    </div>
+
+    <div id="config-step-2" style="display: none;">
+      <div class="config-sub">Set a 4-digit PIN to unlock the app on this device. This PIN encrypts your webhook credentials, without it, no one can use the app or extract the secret.</div>
+      <div style="display: flex; justify-content: center; margin: 30px 0;">
+        <div class="pin-dots" id="setup-pin-dots">
+          <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+        </div>
+      </div>
+      <div style="display: flex; justify-content: center;">
+        <div class="keypad">
+          <button class="keypad-btn" onclick="setupPinPress('1')">1</button>
+          <button class="keypad-btn" onclick="setupPinPress('2')">2</button>
+          <button class="keypad-btn" onclick="setupPinPress('3')">3</button>
+          <button class="keypad-btn" onclick="setupPinPress('4')">4</button>
+          <button class="keypad-btn" onclick="setupPinPress('5')">5</button>
+          <button class="keypad-btn" onclick="setupPinPress('6')">6</button>
+          <button class="keypad-btn" onclick="setupPinPress('7')">7</button>
+          <button class="keypad-btn" onclick="setupPinPress('8')">8</button>
+          <button class="keypad-btn" onclick="setupPinPress('9')">9</button>
+          <button class="keypad-btn empty"></button>
+          <button class="keypad-btn" onclick="setupPinPress('0')">0</button>
+          <button class="keypad-btn action" onclick="setupPinBackspace()">⌫</button>
+        </div>
+      </div>
+      <div style="text-align: center; margin-top: 14px; font-size: 12px; color: var(--text-subtle);" id="setup-pin-status">Enter PIN</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SETTINGS MODAL ========== -->
+<div class="modal-backdrop" id="settings-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Settings</div>
+      <button class="modal-close" onclick="closeSettings()">×</button>
+    </div>
+
+    <div class="settings-section" id="install-section">
+      <div class="settings-header">Get the app</div>
+      <div class="settings-card">
+        <div class="settings-row" onclick="confirmInstall()">
+          <span class="settings-label">⬇️ Add to Home Screen</span>
+          <span class="settings-value">›</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section" id="demo-export-section" style="display:none;">
+      <div class="settings-header">Demo</div>
+      <div class="settings-card">
+        <div class="settings-row" onclick="exportDemoData()">
+          <span class="settings-label">📤 Export my data</span>
+          <span class="settings-value">›</span>
+        </div>
+        <div class="settings-row" onclick="closeSettings(); startTour(true)">
+          <span class="settings-label">❓ Replay the quick tour</span>
+          <span class="settings-value">›</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-header">News</div>
+      <div class="settings-card">
+        <div class="settings-row" onclick="openNews()">
+          <span class="settings-label">📰 What's New &amp; Roadmap</span>
+          <span class="settings-value">›</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-header">Account</div>
+      <div class="settings-card">
+        <div class="settings-row" onclick="copyMaskedSecret()">
+          <span class="settings-label">Webhook</span>
+          <span class="settings-value" id="settings-webhook">configured ✓</span>
+        </div>
+        <div class="settings-row" onclick="reconfigureAccount()">
+          <span class="settings-label">Reconfigure URL / Secret</span>
+          <span class="settings-value">›</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-header">Security</div>
+      <div class="settings-card">
+        <div class="settings-row" onclick="toggleBiometricSetting()">
+          <span class="settings-label">🔓 Biometric Unlock</span>
+          <span class="settings-value" id="bio-setting-state">Off</span>
+        </div>
+        <div class="settings-row" onclick="changePin()">
+          <span class="settings-label">Change PIN</span>
+          <span class="settings-value">›</span>
+        </div>
+        <div class="settings-row danger" onclick="signOut()">
+          <span class="settings-label">Sign Out / Wipe This Device</span>
+          <span class="settings-value">›</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-header">Legal</div>
+      <div class="settings-card">
+        <div class="settings-row" onclick="openLegal()">
+          <span class="settings-label">📜 Terms, Privacy &amp; Disclaimer</span>
+          <span class="settings-value">›</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-header">About</div>
+      <div class="about-box">
+        <div style="font-family: 'Cinzel Decorative', 'Cinzel', Garamond, serif; font-size: 15px; font-weight: 700; color: var(--cream); margin-bottom: 2px; letter-spacing: 0; white-space: nowrap;">The Millionaire Engine</div>
+        <div class="signature-mark">
+          <a href="https://www.google.com/search?q=Patrick+Panuncillon" target="_blank" rel="noopener noreferrer"><span class="logo-p">₱</span>atrick <span class="logo-p">₱</span>anuncillon</a>
+        </div>
+        <div style="font-family:'Metamorphous','Cinzel',Georgia,serif; font-weight:400; font-size:16px; color:var(--cream-dim); letter-spacing:3px; margin-top:6px; line-height:1.35;">MLC.AI</div>
+        <div class="about-version" style="margin-top: 10px;">VERSION 3.2 · 2026</div>
+        <div style="font-size: 11px; color: var(--text-subtle); margin-top: 14px; line-height: 1.5; padding-top: 12px; border-top: 1px solid var(--divider);">
+          🔒 End-to-end encrypted on this device.<br>
+          Webhook secret never leaves your browser unencrypted.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== CUSTOM LOG MODAL ========== -->
+<div class="modal-backdrop" id="custom-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Log Transaction</div>
+      <button class="modal-close" onclick="closeCustomLog()">×</button>
+    </div>
+    <form id="custom-form" onsubmit="submitCustomLog(event)">
+      <div class="form-row">
+        <div class="seg" id="type-seg">
+          <button type="button" class="seg-btn seg-expense active" onclick="setLogType('expense', this)">Expense</button>
+          <button type="button" class="seg-btn seg-income" onclick="setLogType('income', this)">Income</button>
+        </div>
+      </div>
+      <div class="form-row">
+        <button type="button" class="rec-btn" id="recurring-toggle" onclick="toggleRecurring()">🔁 Monthly recurring · OFF</button>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Date</label>
+        <input type="date" class="form-input" id="form-date" required>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Item / Description</label>
+        <input type="text" class="form-input" id="form-item" placeholder="e.g. PLDT Internet" required>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Category</label>
+        <select class="form-select" id="form-category" required>
+          <option value="">Choose category…</option>
+          <option>Needs (Fixed)</option>
+          <option>Needs (Variable)</option>
+          <option>Gas / Fuel</option>
+          <option>Family Dining</option>
+          <option>Family Support</option>
+          <option>Patrick Expense</option>
+          <option>Debt (Fixed)</option>
+          <option>Debt (Fintech)</option>
+          <option>Debt (CC)</option>
+          <option>Subscription</option>
+          <option>Government</option>
+          <option>Eli's Workshop</option>
+          <option>CODEX-Business Expense</option>
+          <option>Money ++</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Amount (PHP)</label>
+        <input type="number" class="form-input" id="form-amount" placeholder="0.00" step="0.01" min="0" required inputmode="decimal">
+      </div>
+      <div class="form-row" id="row-payment">
+        <label class="form-label">Payment Method</label>
+        <select class="form-select" id="form-payment">
+          <option value="GCASH" selected>GCash</option>
+          <option value="BPI - Checking">BPI Checking</option>
+          <option value="BPI - Savings">BPI Savings</option>
+          <option value="SB - Checking">SB Checking</option>
+          <option value="BillEase">BillEase</option>
+          <option value="Cash">Cash</option>
+          <option value="">- Other / blank -</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Status</label>
+        <select class="form-select" id="form-status">
+          <option value="Paid" selected>Paid</option>
+          <option>Pending</option>
+          <option>Unpaid</option>
+          <option>Priority</option>
+          <option>Note</option>
+        </select>
+      </div>
+      <div class="form-row" id="row-notes">
+        <label class="form-label">Notes (optional)</label>
+        <input type="text" class="form-input" id="form-notes" placeholder="">
+      </div>
+      <button type="submit" class="btn-primary" id="form-submit">Log Transaction</button>
+    </form>
+  </div>
+</div>
+
+<!-- ========== COMING SOON MODAL ========== -->
+<div class="modal-backdrop" id="soon-modal" onclick="if(event.target.id==='soon-modal')this.classList.remove('open')">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="soon-title">Coming soon</div>
+      <button class="modal-close" onclick="document.getElementById('soon-modal').classList.remove('open')">×</button>
+    </div>
+    <div id="soon-msg" style="padding:2px 2px 10px;color:var(--text-dim);font-size:14px;line-height:1.55;"></div>
+    <div style="font-size:12px;color:var(--text-subtle);margin-bottom:14px;">🔜 Planned feature, not active yet.</div>
+    <button class="btn-primary" onclick="document.getElementById('soon-modal').classList.remove('open')">Got it</button>
+  </div>
+</div>
+
+<!-- Demo: consent gate (shown before setup, and again after an unlock) -->
+<div class="lock-screen" id="consent-screen">
+  <div style="max-width: 430px; width: 100%;">
+    <img class="lock-logo" src="icon-512.png?v=4" alt="" style="display:block;margin:0 auto 8px;width:84px;height:84px;border-radius:20px;box-shadow:0 6px 18px rgba(0,0,0,0.4);">
+    <div class="lock-title">Before you start</div>
+    <div style="background: rgba(232,184,114,0.08); border: 1px solid rgba(232,184,114,0.28); border-radius: 14px; padding: 12px 14px; margin: 12px 0; text-align: left;">
+      <div style="font-size: 13px; color: var(--cream); line-height: 1.65;">I built this app for my own use. I wanted a more disciplined, efficient way to steward what I earn and see where every peso goes.</div>
+      <div style="font-size: 13px; color: var(--text-dim); line-height: 1.6; margin-top: 8px;">Thank you for helping test my first financial management app.</div>
+      <div style="text-align: right; margin-top: 10px; font-family:'Cinzel',Garamond,serif; font-weight:600; font-size: 20px; letter-spacing: 2px; color: var(--accent-warm);">- <span class="logo-p">₱</span><span class="logo-p">₱</span></div>
+    </div>
+    <div style="font-size: 13px; color: var(--text-dim); line-height: 1.6; margin: 12px 0; text-align: left;">
+      <p style="margin:0 0 10px;">This is a free <b>1-month demo</b> of The Millionaire Engine. Your entries are saved <b>only on this phone</b>.</p>
+      <p style="margin:0 0 10px;">To improve the app, anonymous <b>usage activity</b> (which features you use) is recorded on your device. It is shared with the developer <b>only if you choose</b> to send it.</p>
+      <p style="margin:0;">Please review the <a href="#" onclick="openLegal();return false;" style="color:var(--accent-warm);text-decoration:underline;">Terms of Use &amp; Privacy Policy</a> before continuing.</p>
+    </div>
+    <label style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:var(--text-dim); line-height:1.5; text-align:left; margin-bottom:14px; cursor:pointer;">
+      <input type="checkbox" id="consent-check" onchange="var b=document.getElementById('consent-btn'); b.disabled=!this.checked; b.style.opacity=this.checked?'1':'0.5';" style="width:20px; height:20px; flex-shrink:0; margin-top:1px; accent-color:#8fc7a3;">
+      <span>I have read and agree to the <b>Terms of Use</b> and <b>Privacy Policy</b>, and I consent to anonymous on-device usage data being recorded to improve the app.</span>
+    </label>
+    <button class="btn-primary" id="consent-btn" onclick="acceptConsent()" disabled style="opacity:0.5;">I Agree &amp; Continue</button>
+    <div style="font-size: 11px; color: var(--text-subtle); margin-top: 10px; text-align:center;">Next: install the app. Not financial advice; for personal budgeting only.</div>
+  </div>
+</div>
+
+<!-- Demo onboarding: install step (after consent, before setup) -->
+<div class="lock-screen" id="install-screen">
+  <div style="max-width: 430px; width: 100%; text-align:center;">
+    <img class="lock-logo" src="icon-512.png?v=4" alt="" style="display:block;margin:0 auto 14px;width:100px;height:100px;border-radius:24px;box-shadow:0 8px 22px rgba(0,0,0,0.45);">
+    <div class="lock-title">Install the app</div>
+    <div style="font-size: 13px; color: var(--text-dim); line-height: 1.65; margin: 14px 0 20px;">
+      Add <b style="color:var(--cream);">The Millionaire Engine</b> to your home screen so it opens full screen and one tap away, just like a native app. Recommended for the best experience.
+    </div>
+    <button class="btn-primary" id="install-step-btn" onclick="installFromStep()" style="width:100%;">Install the app</button>
+    <button type="button" onclick="skipInstall()" style="background:none; border:1px solid rgba(245,233,212,0.22); color:var(--cream-dim); border-radius:10px; padding:11px; width:100%; margin-top:12px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer;">Continue to the demo</button>
+    <div style="font-size: 11px; color: var(--text-subtle); margin-top: 12px; line-height:1.5;">On iPhone: tap the Share icon, then choose "Add to Home Screen".</div>
+  </div>
+</div>
+
+<!-- Demo: trial-ended / unlock screen -->
+<div class="lock-screen" id="expired-screen">
+  <div style="max-width: 430px; width: 100%;">
+    <img class="lock-logo" src="icon-512.png?v=4" alt="" style="display:block;margin:0 auto 8px;width:84px;height:84px;border-radius:20px;box-shadow:0 6px 18px rgba(0,0,0,0.4);">
+    <div class="lock-title">Trial ended</div>
+    <div style="font-size: 13px; color: var(--text-dim); line-height: 1.6; margin: 12px 0; text-align: left;">
+      <p style="margin:0 0 10px;">Your <b>1-month demo</b> has ended, thanks for testing! 🙏</p>
+      <p style="margin:0 0 10px;">To keep using it, <b>contact Patrick (the developer)</b> and send:<br>① your usage data (tap <b>Export my data</b>), and<br>② a short <b>voice note or video</b> of your honest feedback.</p>
+      <p style="margin:0 0 10px;">He'll reply with your <b>unlock code</b>.</p>
+      <p style="margin:0;color:var(--cream);">📧 patrick@teamenoch.com</p>
+    </div>
+    <button class="btn-primary" style="margin-bottom: 10px;" onclick="exportDemoData()">📤 Export my data</button>
+    <input type="text" class="form-input selectable" id="unlock-code" placeholder="Enter unlock code" autocomplete="off" autocapitalize="characters" style="text-align:center; margin-bottom: 10px;">
+    <button class="btn-primary" onclick="tryUnlockCode()">Unlock</button>
+    <div id="unlock-msg" style="font-size: 12px; color: var(--text-subtle); margin-top: 10px; text-align:center;"></div>
+  </div>
+</div>
+
+<!-- Legal: Terms / Privacy / Disclaimer / build -->
+<!-- News: What's New & Roadmap -->
+<div class="modal-backdrop" id="news-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">What's New &amp; Roadmap</div>
+      <button class="modal-close" onclick="closeNews()">×</button>
+    </div>
+    <div id="news-body" style="max-height: 64vh; overflow-y: auto; -webkit-overflow-scrolling: touch;"></div>
+  </div>
+</div>
+
+<!-- Calendar day detail: that day's money in/out + pending bills you can settle -->
+<div class="modal-backdrop" id="day-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <button class="cal-arrow" onclick="dayDetailNav(-1)" aria-label="Previous day">‹</button>
+      <div class="modal-title" id="day-title" style="flex:1; text-align:center;">Day</div>
+      <button class="cal-arrow" onclick="dayDetailNav(1)" aria-label="Next day">›</button>
+      <button class="modal-close" onclick="closeDayDetail()">×</button>
+    </div>
+    <div id="day-body" style="max-height: 56vh; overflow-y: auto; -webkit-overflow-scrolling: touch;"></div>
+    <button class="mg-btn" id="day-add-btn" style="width:100%; margin-top:14px; padding:12px; border:1px dashed rgba(245,233,212,0.3);" onclick="addEntryForDay()">+ Log a transaction for this day</button>
+    <div style="font-size:11px; color:var(--text-subtle); text-align:center; margin-top:8px;">Swipe or tap ‹ › to move day by day.</div>
+  </div>
+</div>
+
+<!-- Overdue payables popup (from the Overdue KPI card) -->
+<div class="modal-backdrop" id="overdue-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Overdue payables</div>
+      <button class="modal-close" onclick="closeOverdue()">×</button>
+    </div>
+    <div id="overdue-body" style="max-height: 60vh; overflow-y: auto; -webkit-overflow-scrolling: touch;"></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="legal-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Terms, Privacy &amp; About</div>
+      <button class="modal-close" onclick="closeLegal()">×</button>
+    </div>
+    <div id="legal-body" style="max-height: 64vh; overflow-y: auto; -webkit-overflow-scrolling: touch; font-size: 12px; color: var(--text-dim); line-height: 1.6;"></div>
+  </div>
+</div>
+
+<!-- Demo: first-run guided spotlight tour -->
+<div class="tour-root" id="demo-tut">
+  <div class="tour-block" id="tour-block"></div>
+  <div class="tour-spot" id="tour-spot"></div>
+  <div class="tour-tip" id="tour-tip">
+    <div class="tour-dots" id="tour-dots"></div>
+    <div class="tour-title" id="tour-title"></div>
+    <div class="tour-body" id="tour-body"></div>
+    <div class="tour-actions">
+      <button class="tour-arrow" id="tour-prev" onclick="tourPrev()" aria-label="Back">‹</button>
+      <button class="tour-next" id="tour-next" onclick="tourNext()">Next ›</button>
+    </div>
+  </div>
+</div>
+
+<!-- Ledger summary (Income / Expenses MTD → this + previous month) -->
+<div class="modal-backdrop" id="ledger-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="ledger-title">Summary</div>
+      <button class="modal-close" onclick="closeLedger()">×</button>
+    </div>
+    <div id="ledger-body" style="max-height:62vh; overflow-y:auto; -webkit-overflow-scrolling:touch;">
+      <div class="upcoming-empty" style="padding:16px;">Loading…</div>
+    </div>
+  </div>
+</div>
+
+<!-- Install confirm popup -->
+<div class="modal-backdrop" id="install-confirm">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Install app</div>
+      <button class="modal-close" onclick="closeInstallConfirm()">×</button>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+      <img src="icon-512.png?v=4" alt="" style="width:48px; height:48px; border-radius:12px;">
+      <div style="font-size:14px; color:var(--text-dim); line-height:1.5;">Add <b style="color:var(--cream);">The Millionaire Engine</b> to your home screen for one-tap access, like a native app.</div>
+    </div>
+    <div style="display:flex; gap:10px;">
+      <button class="mg-btn" style="flex:1; padding:12px;" onclick="closeInstallConfirm()">Not now</button>
+      <button class="mg-btn" style="flex:1; padding:12px; background:#8fc7a3; color:#0c2a25; font-weight:700;" onclick="doInstallConfirmed()">Install</button>
+    </div>
+  </div>
+</div>
+
+<!-- Install banner (first open, when installable) -->
+<div class="install-banner" id="install-banner">
+  <img src="icon-512.png?v=4" alt="" class="ib-icon">
+  <div class="ib-text">
+    <div class="ib-title">Install The Millionaire Engine</div>
+    <div class="ib-sub">Add it to your home screen</div>
+  </div>
+  <button class="ib-btn" onclick="confirmInstall()">Install</button>
+  <button class="ib-x" onclick="dismissInstall()" aria-label="Dismiss">×</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ============================================================
+  // SECURITY LAYER, PIN-encrypted config via Web Crypto API
+  // ============================================================
+  // The webhook URL and secret are stored in localStorage as AES-256-GCM
+  // ciphertext. The encryption key is derived from the user's PIN using
+  // PBKDF2 with a random salt. Without the PIN, the localStorage data is
+  // unreadable garbage.
+  //
+  // No webhook URL or secret is ever hardcoded in this source file.
+  // ============================================================
+
+  const SANDBOX = /demo/i.test(location.pathname);   // demo URL (…/engine-demo/…) → local sandbox, no backend
+  // Crawlability: the public demo is indexable; the private real app stays hidden (same file serves both).
+  if (SANDBOX) { try { var _rm = document.getElementById('robots-meta'); if (_rm) _rm.setAttribute('content', 'index, follow, max-image-preview:large'); } catch (e) {} }
+  const STORAGE_KEY_CONFIG = 'engine_secure_v1' + (SANDBOX ? '_demo' : '');
+  const STORAGE_KEY_CACHE = 'engine_cache_v3' + (SANDBOX ? '_demo' : '');
+  const STORAGE_KEY_LOCKOUT = 'engine_lockout_v1' + (SANDBOX ? '_demo' : '');
+  const MAX_PIN_ATTEMPTS = 5;
+  const APP_VERSION = '3.7';
+
+  let CFG = null;            // {url, secret} after unlock, never persisted in plaintext
+  let currentPin = '';       // accumulator during PIN entry
+  let setupPin1 = '';        // first PIN entry during setup
+  let setupPinConfirm = '';  // PIN re-entry during setup
+  let setupPhase = 'enter';  // 'enter' or 'confirm'
+  let pendingConfig = null;  // staging during setup
+
+  let chartMonths = 6;
+  let catStatus = 'Paid';
+  let monthlyChart = null;
+  let categoryChart = null;
+
+  // ===== Crypto helpers =====
+  async function deriveKey(pin, salt) {
+    const enc = new TextEncoder();
+    const keyMaterial = await crypto.subtle.importKey(
+      'raw', enc.encode(pin), 'PBKDF2', false, ['deriveKey']
+    );
+    return crypto.subtle.deriveKey(
+      { name: 'PBKDF2', salt: salt, iterations: 250000, hash: 'SHA-256' },
+      keyMaterial,
+      { name: 'AES-GCM', length: 256 },
+      false, ['encrypt', 'decrypt']
+    );
+  }
+
+  async function encryptConfig(pin, configObj) {
+    const enc = new TextEncoder();
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const key = await deriveKey(pin, salt);
+    const plaintext = enc.encode(JSON.stringify(configObj));
+    const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, plaintext);
+    return {
+      salt: Array.from(salt),
+      iv: Array.from(iv),
+      ciphertext: Array.from(new Uint8Array(ciphertext)),
+      version: 1
+    };
+  }
+
+  async function decryptConfig(pin, blob) {
+    const salt = new Uint8Array(blob.salt);
+    const iv = new Uint8Array(blob.iv);
+    const ciphertext = new Uint8Array(blob.ciphertext);
+    const key = await deriveKey(pin, salt);
+    const plaintext = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv }, key, ciphertext);
+    const dec = new TextDecoder();
+    return JSON.parse(dec.decode(plaintext));
+  }
+
+  // ===== Biometric unlock (WebAuthn platform authenticator + PRF) =====
+  // The PIN is the master key. Biometrics never replace it: we wrap the PIN with a high-entropy
+  // secret (WebAuthn PRF) that the platform authenticator only releases after a fingerprint / Face ID
+  // check. Decrypting the config still uses the PIN — biometrics just unlock it. PIN always works.
+  const STORAGE_KEY_BIO = 'engine_bio_v1' + (SANDBOX ? '_demo' : '');
+  let sessionPin = '';   // in-memory only (never persisted); lets Settings enroll biometrics this session
+
+  function b64u(buf) { let s = btoa(String.fromCharCode.apply(null, new Uint8Array(buf))); return s.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+  function unb64u(str) { str = str.replace(/-/g, '+').replace(/_/g, '/'); while (str.length % 4) str += '='; const bin = atob(str); const b = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) b[i] = bin.charCodeAt(i); return b; }
+  function bioEnrolled() { try { return !!localStorage.getItem(STORAGE_KEY_BIO); } catch (e) { return false; } }
+  async function bioSupported() {
+    try { return !!(window.PublicKeyCredential && window.isSecureContext && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()); }
+    catch (e) { return false; }
+  }
+  function keyFromPrf(bytes) { return crypto.subtle.importKey('raw', bytes, { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']); }
+
+  // Run an assertion that evaluates the PRF for our salt; returns the biometric-bound secret (or null).
+  async function evalPrf(credId, salt) {
+    const assertion = await navigator.credentials.get({ publicKey: {
+      challenge: crypto.getRandomValues(new Uint8Array(32)),
+      allowCredentials: [{ type: 'public-key', id: unb64u(credId) }],
+      userVerification: 'required',
+      timeout: 60000,
+      extensions: { prf: { eval: { first: salt } } }
+    }});
+    const res = assertion && assertion.getClientExtensionResults && assertion.getClientExtensionResults();
+    const first = res && res.prf && res.prf.results && res.prf.results.first;
+    return first ? new Uint8Array(first) : null;
+  }
+
+  async function enableBiometrics(pin) {
+    if (!pin) { showToast('Unlock with your PIN once, then enable biometrics.', 'error'); return false; }
+    if (!(await bioSupported())) { showToast('No fingerprint / Face ID available on this device or browser.', 'error'); return false; }
+    try {
+      const prfSalt = crypto.getRandomValues(new Uint8Array(32));
+      const cred = await navigator.credentials.create({ publicKey: {
+        challenge: crypto.getRandomValues(new Uint8Array(32)),
+        rp: { name: 'The Millionaire Engine' },   // rp.id omitted → defaults to this app's origin
+        user: { id: crypto.getRandomValues(new Uint8Array(16)), name: 'engine-user', displayName: 'Engine' },
+        pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+        authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required', residentKey: 'preferred' },
+        timeout: 60000,
+        extensions: { prf: {} }
+      }});
+      if (!cred) throw new Error('cancelled');
+      const credId = b64u(cred.rawId);
+      const prf = await evalPrf(credId, prfSalt);
+      if (!prf) throw new Error('your browser does not support the PRF extension');
+      const key = await keyFromPrf(prf);
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, new TextEncoder().encode(pin));
+      localStorage.setItem(STORAGE_KEY_BIO, JSON.stringify({ credId: credId, salt: Array.from(prfSalt), iv: Array.from(iv), ct: Array.from(new Uint8Array(ct)) }));
+      updateBioUI();
+      showToast('✓ Biometric unlock enabled', 'success');
+      return true;
+    } catch (e) {
+      showToast('Could not enable biometrics: ' + ((e && e.message) || 'unavailable'), 'error');
+      return false;
+    }
+  }
+
+  async function unlockWithBiometrics() {
+    const raw = (function () { try { return localStorage.getItem(STORAGE_KEY_BIO); } catch (e) { return null; } })();
+    if (!raw) return;
+    let blob; try { blob = JSON.parse(raw); } catch (e) { return; }
+    const sub = document.getElementById('lock-sub');
+    if (sub) sub.textContent = 'Verifying…';
+    try {
+      const prf = await evalPrf(blob.credId, new Uint8Array(blob.salt));
+      if (!prf) throw new Error('no prf');
+      const key = await keyFromPrf(prf);
+      const pinBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: new Uint8Array(blob.iv) }, key, new Uint8Array(blob.ct));
+      currentPin = new TextDecoder().decode(pinBuf);
+      await tryUnlock();
+    } catch (e) {
+      currentPin = '';
+      if (sub) sub.textContent = 'Biometrics cancelled. Enter your PIN.';
+    }
+  }
+
+  function disableBiometrics() { try { localStorage.removeItem(STORAGE_KEY_BIO); } catch (e) {} updateBioUI(); showToast('Biometric unlock turned off', 'success'); }
+
+  function updateBioUI() {
+    const btn = document.getElementById('bio-unlock-btn');
+    if (btn) btn.style.display = bioEnrolled() ? '' : 'none';
+    const st = document.getElementById('bio-setting-state');
+    if (st) st.textContent = bioEnrolled() ? 'On' : 'Off';
+  }
+
+  async function toggleBiometricSetting() {
+    if (bioEnrolled()) { if (confirm('Turn off biometric unlock on this device?')) disableBiometrics(); return; }
+    if (!(await bioSupported())) { showToast('No fingerprint / Face ID available on this device or browser.', 'error'); return; }
+    if (!sessionPin) { showToast('Unlock with your PIN once, then enable biometrics here.', 'error'); return; }
+    await enableBiometrics(sessionPin);
+  }
+
+  // One-time gentle offer after a manual PIN unlock or fresh setup.
+  async function maybeOfferBiometrics() {
+    try {
+      if (bioEnrolled() || !sessionPin) return;
+      if (localStorage.getItem('engine_bio_prompted') === '1') return;
+      if (!(await bioSupported())) return;
+      localStorage.setItem('engine_bio_prompted', '1');
+      setTimeout(function () {
+        if (confirm('Enable biometric unlock (fingerprint / Face ID) so you can skip the PIN next time?')) enableBiometrics(sessionPin);
+      }, 900);
+    } catch (e) {}
+  }
+
+  // ===== Lockout state =====
+  function getFailCount() {
+    return parseInt(localStorage.getItem(STORAGE_KEY_LOCKOUT) || '0', 10);
+  }
+  function incrementFailCount() {
+    const n = getFailCount() + 1;
+    localStorage.setItem(STORAGE_KEY_LOCKOUT, String(n));
+    return n;
+  }
+  function clearFailCount() {
+    localStorage.removeItem(STORAGE_KEY_LOCKOUT);
+  }
+
+  // ===== Sandbox (demo) backend, all data lives in localStorage, nothing leaves the device =====
+  function sbYmd(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  function sbParse(s) { return new Date(s + 'T00:00:00'); }
+  function sbMLabel(d) { return d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); }
+  function sbSeed() {
+    const now = new Date(), y = now.getFullYear(), m = now.getMonth(), dd = now.getDate();
+    const D = (mo, day) => sbYmd(new Date(y, mo, day)), F = (off) => sbYmd(new Date(y, m, dd + off));
+    return [
+      { date: D(m, 2), item: 'Salary', category: 'Money ++', amount: 45000, payment_method: 'BPI - Savings', status: 'Paid', notes: '' },
+      { date: D(m, 16), item: 'Freelance project', category: 'Money ++', amount: 12000, payment_method: 'GCASH', status: 'Paid', notes: '' },
+      { date: D(m, 3), item: 'Groceries', category: 'Needs (Variable)', amount: 4800, payment_method: 'GCASH', status: 'Paid', notes: '' },
+      { date: D(m, 5), item: 'Electricity', category: 'Needs (Fixed)', amount: 3200, payment_method: 'GCASH', status: 'Paid', notes: '' },
+      { date: D(m, 6), item: 'Fuel', category: 'Gas / Fuel', amount: 1000, payment_method: 'Cash', status: 'Paid', notes: '' },
+      { date: D(m, 8), item: 'Family Dining', category: 'Family Dining', amount: 1500, payment_method: 'GCASH', status: 'Paid', notes: '' },
+      { date: D(m, 10), item: 'Internet', category: 'Subscription', amount: 1699, payment_method: 'BPI - Checking', status: 'Paid', notes: '' },
+      { date: F(1), item: 'Water bill', category: 'Needs (Fixed)', amount: 600, payment_method: '', status: 'Pending', notes: '' },
+      { date: F(2), item: 'Phone plan', category: 'Subscription', amount: 999, payment_method: '', status: 'Pending', notes: '' },
+      { date: F(4), item: 'Credit card', category: 'Debt (CC)', amount: 5000, payment_method: '', status: 'Priority', notes: '' },
+      { date: F(6), item: 'Gym membership', category: 'Subscription', amount: 1200, payment_method: '', status: 'Pending', notes: '' },
+      { date: D(m - 1, 2), item: 'Salary', category: 'Money ++', amount: 45000, payment_method: 'BPI - Savings', status: 'Paid', notes: '' },
+      { date: D(m - 1, 7), item: 'Groceries', category: 'Needs (Variable)', amount: 5200, payment_method: 'GCASH', status: 'Paid', notes: '' },
+      { date: D(m - 1, 20), item: 'Car repair', category: 'Needs (Variable)', amount: 8500, payment_method: 'Cash', status: 'Paid', notes: '' }
+    ];
+  }
+  function sbSave(arr) { arr.sort((a, b) => a.date.localeCompare(b.date)); try { localStorage.setItem('engine_demo_data', JSON.stringify(arr)); } catch (e) {} }
+  function sbLoad() {
+    try { const d = JSON.parse(localStorage.getItem('engine_demo_data')); if (Array.isArray(d)) return d; } catch (e) {}
+    return [];   // demo starts EMPTY, the tester builds their own data
+  }
+  async function sandboxWebhook(action, data) {
+    data = data || {};
+    const arr = sbLoad();
+    const now = new Date(), curLabel = sbMLabel(now);
+    const rows = () => arr.map((e, i) => Object.assign({ row: i + 2 }, e));
+    if (action === 'ping') return { pong: true, sandbox: true };
+    if (action === 'add_payable') return { ok: true };
+    if (action === 'add_master_log_row') {
+      arr.push({ date: data.date, item: data.item, category: data.category, amount: parseFloat(data.amount) || 0, payment_method: data.payment_method || '', status: data.status || 'Pending', notes: data.notes || '' });
+      sbSave(arr); return { row_inserted: arr.length + 1, item: data.item, sorted: true };
+    }
+    if (action === 'update_master_log_status') {
+      const q = String(data.search || '').toLowerCase();
+      const _td = new Date(); const todayStr = _td.getFullYear() + '-' + String(_td.getMonth() + 1).padStart(2, '0') + '-' + String(_td.getDate()).padStart(2, '0');
+      for (const e of arr) { if (String(e.item || '').toLowerCase().indexOf(q) !== -1 && (!data.date || e.date === data.date)) { e.status = data.status || 'Paid'; if (e.status === 'Paid' && String(e.date) > todayStr) e.date = todayStr; sbSave(arr); return { matched: true, new_status: e.status, date: e.date }; } }
+      throw new Error('no matching row: ' + data.search);
+    }
+    if (action === 'update_master_log_row' || action === 'delete_master_log_row') {
+      const idx = (parseInt(data.row) || 0) - 2;
+      if (idx < 0 || idx >= arr.length) throw new Error('row out of range');
+      if (data.expect_item && String(arr[idx].item || '').toLowerCase() !== String(data.expect_item).toLowerCase()) throw new Error('row_mismatch, refresh and retry');
+      if (action === 'delete_master_log_row') { const it = arr[idx].item; arr.splice(idx, 1); sbSave(arr); return { deleted_row: data.row, item: it }; }
+      if (data.date !== undefined) arr[idx].date = data.date;
+      if (data.item !== undefined) arr[idx].item = data.item;
+      if (data.category !== undefined) arr[idx].category = data.category;
+      if (data.amount !== undefined) arr[idx].amount = parseFloat(data.amount) || 0;
+      if (data.status !== undefined) arr[idx].status = data.status;
+      sbSave(arr); return { updated: true };
+    }
+    if (action === 'month_summary') {
+      const off = parseInt(data && data.offset) || 0;                    // swipable KPIs: 0=this month, -1 prev, +1 next
+      const base = new Date(now.getFullYear(), now.getMonth() + off, 1);
+      const tgtY = base.getFullYear(), tgtM = base.getMonth(), tgtLabel = sbMLabel(base);
+      let inc = 0, exp = 0, pend = 0, over = 0; const oi = [];
+      const t0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const floor = new Date(t0.getTime() - 60 * 86400000);
+      arr.forEach(e => {
+        const a = e.amount || 0;
+        const st = String(e.status || '').toLowerCase();
+        const d = sbParse(e.date);
+        const inMonth = d.getFullYear() === tgtY && d.getMonth() === tgtM;
+        const isIncome = e.category === 'Money ++';
+        const payable = !isIncome && st !== 'paid' && st !== 'cancelled' && st !== 'note' && st !== 'received';
+        if (inMonth && st === 'paid' && isIncome) inc += a;
+        else if (inMonth && st === 'paid') exp += a;
+        else if (inMonth && payable && d >= t0) pend += a;                                   // due later this month, not overdue
+        // overdue: this month (off 0) = global 60-day so it matches the Payments list; other months = that month's unpaid past-due
+        const isOverdue = (off === 0) ? (payable && d < t0 && d >= floor) : (inMonth && payable && d < t0);
+        if (isOverdue) { over += a; oi.push({ item: e.item, amount: a, date: e.date }); }
+      });
+      return { month: tgtLabel, income_received: inc, expenses_paid: exp, expenses_pending: pend, expenses_overdue: over, overdue_items: oi };
+    }
+    if (action === 'list_upcoming') {
+      const days = parseInt(data.days) || 7, t0 = new Date(now.getFullYear(), now.getMonth(), now.getDate()), cutoff = new Date(t0.getTime() + days * 86400000);
+      const floor = new Date(t0.getTime() - 60 * 86400000);  // also surface overdue (unpaid, up to 60 days back)
+      const items = rows().filter(e => { const st = String(e.status || '').toLowerCase(); if (st === 'paid' || st === 'cancelled' || st === 'note' || st === 'received') return false; if (e.category === 'Money ++') return false; const d = sbParse(e.date); return d >= floor && d <= cutoff; })
+        .map(e => ({ row: e.row, date: e.date, item: e.item, category: e.category, amount: e.amount, status: e.status }));
+      items.sort((a, b) => a.date.localeCompare(b.date) || a.amount - b.amount);
+      return { window_days: days, count: items.length, items: items };
+    }
+    if (action === 'category_breakdown') {
+      const off = parseInt(data && data.offset) || 0;                    // swipable Money Map: follows the KPI month
+      const tgtLabel = sbMLabel(new Date(now.getFullYear(), now.getMonth() + off, 1));
+      const f = data.status_filter || 'Paid', map = {};
+      arr.forEach(e => { if (sbMLabel(sbParse(e.date)) !== tgtLabel || e.category === 'Money ++') return; const ok = f === 'All' ? e.status !== 'Cancelled' : e.status === f; if (!ok) return; map[e.category] = (map[e.category] || 0) + (e.amount || 0); });
+      const cats = Object.keys(map).map(k => ({ name: k, amount: map[k] })).sort((a, b) => b.amount - a.amount);
+      return { month: tgtLabel, status_filter: f, categories: cats };
+    }
+    if (action === 'monthly_history') {
+      const n = parseInt(data.months) || 6, months = [];
+      for (let k = n - 1; k >= 0; k--) { const dt = new Date(now.getFullYear(), now.getMonth() - k, 1), lbl = sbMLabel(dt); let income = 0, ep = 0;
+        arr.forEach(e => { if (sbMLabel(sbParse(e.date)) !== lbl) return; if (e.status === 'Paid' && e.category === 'Money ++') income += e.amount || 0; else if (e.status === 'Paid') ep += e.amount || 0; });
+        months.push({ month: dt.toLocaleDateString('en-US', { month: 'short' }), income: income, expense_paid: ep }); }
+      return { months: months };
+    }
+    if (action === 'month_daily') {
+      const off = parseInt(data && data.offset) || 0;
+      const base = new Date(now.getFullYear(), now.getMonth() + off, 1);
+      const y = base.getFullYear(), mo = base.getMonth(), dim = new Date(y, mo + 1, 0).getDate(), fd = new Date(y, mo, 1).getDay(), per = {};
+      arr.forEach((e, i) => {
+        const d = sbParse(e.date); if (d.getFullYear() !== y || d.getMonth() !== mo) return;
+        const day = d.getDate(); if (!per[day]) per[day] = { income: 0, expense: 0, pending: 0, items: [] };
+        const isInc = e.category === 'Money ++', st = String(e.status || '');
+        if (/paid/i.test(st) && isInc) per[day].income += e.amount || 0;
+        else if (/paid/i.test(st)) per[day].expense += e.amount || 0;
+        else if (!/cancel/i.test(st)) per[day].pending += e.amount || 0;
+        if (!/cancel/i.test(st)) per[day].items.push({ item: e.item, category: e.category, amount: e.amount || 0, status: st, income: isInc, row: i + 2 });
+      });
+      const cells = []; for (let dy = 1; dy <= dim; dy++) { const p = per[dy] || {}; cells.push({ day: dy, income: p.income || 0, expense: p.expense || 0, pending: p.pending || 0, items: p.items || [] }); }
+      const lbl = base.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      return { month: lbl, year: y, monthNum: mo + 1, today: (off === 0 ? now.getDate() : 0), daysInMonth: dim, firstDow: fd, cells: cells };
+    }
+    if (action === 'month_transactions') {
+      const type = data.type === 'income' ? 'income' : 'expense', months = [];
+      for (let k = 0; k <= 1; k++) { const dt = new Date(now.getFullYear(), now.getMonth() - k, 1), lbl = sbMLabel(dt), b = { label: lbl, total: 0, items: [] };
+        arr.forEach(e => { if (sbMLabel(sbParse(e.date)) !== lbl || e.status !== 'Paid') return; const isInc = e.category === 'Money ++'; if (type === 'income' && !isInc) return; if (type === 'expense' && isInc) return; b.items.push({ date: e.date, item: e.item, category: e.category, amount: e.amount || 0 }); b.total += e.amount || 0; });
+        b.items.sort((a, b2) => b2.date.localeCompare(a.date)); months.push(b); }
+      return { type: type, months: months };
+    }
+    return { ok: true };
+  }
+  function applySandboxUI() {
+    const t = document.querySelector('#config-screen .config-title'); if (t) t.textContent = 'Set up your Demo';
+    const sub = document.querySelector('#config-screen .config-sub'); if (sub) sub.textContent = 'A private demo of The Millionaire Engine, your data stays on this phone only.';
+    const note = document.querySelector('#config-screen .config-note'); if (note) note.innerHTML = '🧪 <strong>Demo mode.</strong> Nothing is sent anywhere, every entry is saved only on this device. Just set your name, then a PIN.';
+    const lbl = document.querySelector('#config-step-1 .form-label'); if (lbl) lbl.textContent = 'Your Name';
+    const u = document.getElementById('cfg-url'); if (u) { u.type = 'text'; u.placeholder = 'e.g. Juan Dela Cruz'; u.value = ''; u.setAttribute('autocapitalize', 'words'); }
+    const s = document.getElementById('cfg-secret'); if (s && s.closest('.form-row')) s.closest('.form-row').style.display = 'none';
+    const ds = document.getElementById('demo-export-section'); if (ds) ds.style.display = '';
+    try { document.title = 'The Millionaire Engine - DEMO'; } catch (e) {}
+    const lv = document.getElementById('lock-version'); if (lv) lv.textContent = 'DEMO · v3.7';
+    applyDemoName();
+  }
+  function applyDemoName() {
+    let nm = ''; try { nm = localStorage.getItem('engine_demo_name') || ''; } catch (e) {}
+    if (!nm) return;
+    // Lock screen greets the TESTER ("Demo for [name]"); the footer keeps crediting Patrick (the ₱-P mark).
+    document.querySelectorAll('#lock-footer .sig-script a').forEach(function (a) { a.textContent = nm; a.removeAttribute('href'); a.style.cursor = 'default'; });
+    const eb = document.getElementById('lock-eyebrow'); if (eb) eb.textContent = 'Demo for';
+  }
+  // ===== Demo: usage event log (on-device only, the data foundation for future AI pattern analysis) =====
+  function logEvent(name, meta) {
+    if (!SANDBOX) return;
+    try {
+      const k = 'engine_demo_events';
+      let a = JSON.parse(localStorage.getItem(k) || '[]'); if (!Array.isArray(a)) a = [];
+      a.push({ t: Date.now(), name: name, meta: meta || null });
+      if (a.length > 800) a = a.slice(a.length - 800);
+      localStorage.setItem(k, JSON.stringify(a));
+    } catch (e) {}
+  }
+  function exportDemoData() {
+    try {
+      const payload = { name: localStorage.getItem('engine_demo_name') || '', exported: new Date().toISOString(), data: JSON.parse(localStorage.getItem('engine_demo_data') || '[]'), events: JSON.parse(localStorage.getItem('engine_demo_events') || '[]') };
+      const txt = JSON.stringify(payload);
+      if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(function () { showToast('✓ Your data copied, paste & send to share', 'success'); }, function () { prompt('Copy your data:', txt); }); }
+      else { prompt('Copy your data:', txt); }
+    } catch (e) { showToast('Export failed: ' + e.message, 'error'); }
+  }
+  // ===== Demo: minimalist first-run tutorial =====
+  const TOUR_STEPS = [
+    { sel: null, t: 'Welcome to The Millionaire Engine', b: 'A quick tour with sample numbers so you can see how it works. We clear them when you finish, so you start fresh with your own.' },
+    { sel: '.kpi-grid', t: 'Your month at a glance', b: 'Income, expenses, net position, and overdue. Swipe left or right (or use the ‹ › arrows) to review any month. Tap Income or Expenses for a full breakdown, and tap the Overdue card to see exactly which bills are past due.' },
+    { sel: '.quick-grid', t: 'Log Now', b: 'Tap a tile to add money fast. Each tile opens a quick form with the amount ready to edit, so you always confirm before it logs.' },
+    { sel: '#upcoming-list', t: 'Payments', b: 'All your bills in one place, split into Overdue, Due this week, and Upcoming. Tap a section\'s Show button to open it; every row shows its month. Swipe a row right to mark it Paid, left to Delete.' },
+    { sel: '.mm-card', t: 'Money Map', b: 'Your cash flow at a glance: money in, money out, the net, and where it all goes. It follows the month you are viewing as you swipe the cards above.' },
+    { sel: '#calendar', t: 'Daily calendar', b: 'Green is money in, red is what you spent, and gold marks an upcoming bill not yet paid. Tap any day to see its ins and outs and settle what is due, and swipe (or use the arrows) to move between months.' },
+    { sel: null, t: 'Your turn', b: 'That is the whole app. Tap Start and the sample numbers clear so you can begin logging your own.' }
+  ];
+  let tourIdx = 0, tourManual = false;
+  function startTour(manual) {
+    if (!SANDBOX) return;
+    tourManual = !!manual; tourIdx = 0;
+    try { document.body.style.paddingBottom = 'calc(75vh + env(safe-area-inset-bottom, 0px))'; } catch (e) {}  // scroll room so any card can rise above the bottom tip
+    const m = document.getElementById('demo-tut'); if (m) m.classList.add('open');
+    setTimeout(renderTourStep, 60);
+  }
+  function tourNext() { if (tourIdx < TOUR_STEPS.length - 1) { tourIdx++; renderTourStep(); } else { endTour(); } }
+  function tourPrev() { if (tourIdx > 0) { tourIdx--; renderTourStep(); } }
+  function endTour() {
+    try { localStorage.setItem('engine_demo_tour_done', '1'); } catch (e) {}
+    try { document.body.style.paddingBottom = ''; } catch (e) {}
+    const m = document.getElementById('demo-tut'); if (m) m.classList.remove('open');
+    logEvent('tour_done');
+    if (!tourManual) { try { localStorage.removeItem('engine_demo_data'); } catch (e) {} refreshAll(); }
+    tourManual = false;
+  }
+  function renderTourStep() {
+    const s = TOUR_STEPS[tourIdx];
+    document.getElementById('tour-title').textContent = s.t;
+    document.getElementById('tour-body').textContent = s.b;
+    let dots = ''; for (let i = 0; i < TOUR_STEPS.length; i++) dots += '<span class="tour-dot' + (i === tourIdx ? ' active' : '') + '"></span>';
+    document.getElementById('tour-dots').innerHTML = dots;
+    const prevBtn = document.getElementById('tour-prev'); if (prevBtn) prevBtn.style.visibility = (tourIdx === 0) ? 'hidden' : 'visible';
+    document.getElementById('tour-next').textContent = (tourIdx === TOUR_STEPS.length - 1) ? 'Start' : 'Next ›';
+    const spot = document.getElementById('tour-spot');
+    const el = s.sel ? document.querySelector(s.sel) : null;
+    if (el) {
+      try { el.scrollIntoView({ block: 'center', behavior: 'auto' }); } catch (e) {}
+      setTimeout(function () {
+        const tip = document.getElementById('tour-tip');
+        tip.style.left = '0px'; tip.style.top = '-9999px';        // render off-screen to measure its height
+        const vh = window.innerHeight, th = tip.offsetHeight, gap = 12, headerSafe = 76;
+        const tipTop = vh - th - gap;                             // tip is pinned to the bottom
+        // Scroll the highlighted card into the band ABOVE the tip so it is showcased, never covered
+        let r = el.getBoundingClientRect();
+        const bandTop = headerSafe, bandBottom = tipTop - 14;
+        let delta;
+        if (r.height > (bandBottom - bandTop)) delta = r.top - bandTop;                 // taller than the band: align its top high
+        else delta = (r.top + r.height / 2) - (bandTop + bandBottom) / 2;               // else center it in the band
+        if (Math.abs(delta) > 1) { try { window.scrollBy(0, delta); } catch (e) {} r = el.getBoundingClientRect(); }
+        const pad = 8;
+        spot.style.background = 'transparent';
+        spot.style.boxShadow = '0 0 0 9999px rgba(8,24,22,0.84)';
+        spot.style.border = '2px solid #E8B872';
+        spot.style.borderRadius = '14px';
+        spot.style.left = (r.left - pad) + 'px';
+        spot.style.top = (r.top - pad) + 'px';
+        spot.style.width = (r.width + pad * 2) + 'px';
+        spot.style.height = (r.height + pad * 2) + 'px';
+        positionTip(r, tipTop);
+      }, 240);
+    } else {
+      spot.style.boxShadow = 'none';
+      spot.style.background = 'rgba(8,24,22,0.84)';
+      spot.style.border = 'none';
+      spot.style.borderRadius = '0';
+      spot.style.left = '0'; spot.style.top = '0'; spot.style.width = '100%'; spot.style.height = '100%';
+      centerTip();
+    }
+  }
+  function positionTip(r, tipTop) {
+    const tip = document.getElementById('tour-tip');
+    const vw = window.innerWidth, vh = window.innerHeight, tw = tip.offsetWidth, th = tip.offsetHeight, m = 12;
+    // Tip is pinned to the bottom of the screen; the highlighted card sits in the band above it.
+    let top = (typeof tipTop === 'number') ? tipTop : (vh - th - m);
+    top = Math.max(m, Math.min(top, vh - th - m));
+    let left = r.left + r.width / 2 - tw / 2;
+    left = Math.max(12, Math.min(left, vw - tw - 12));
+    tip.style.left = left + 'px'; tip.style.top = top + 'px';
+  }
+  function centerTip() {
+    const tip = document.getElementById('tour-tip');
+    tip.style.top = '-9999px'; tip.style.left = '0px';
+    const vw = window.innerWidth, vh = window.innerHeight, tw = tip.offsetWidth, th = tip.offsetHeight;
+    tip.style.left = Math.max(12, (vw - tw) / 2) + 'px';
+    tip.style.top = Math.max(12, (vh - th) / 2) + 'px';
+  }
+
+  // ===== Legal (Terms / Privacy / Disclaimer / build), available in real app + demo =====
+  const APP_LEGAL_VERSION = '1.0';
+  function legalHtml() {
+    return ''
+      + '<p style="color:var(--cream);font-weight:700;">Disclaimer</p>'
+      + '<p>The Millionaire Engine ("the App") is a personal budgeting and money-tracking tool for your own informational use. It does <b>not</b> provide financial, investment, tax, accounting, or legal advice. Figures are only as accurate as what you enter. Any decision you make is your own; use at your own risk.</p>'
+      + '<p style="color:var(--cream);font-weight:700;margin-top:14px;">Terms of Use</p>'
+      + '<p>1. <b>Acceptance.</b> By using the App you agree to these Terms and the Privacy Policy below. If you do not agree, do not use the App.</p>'
+      + '<p>2. <b>Demo / beta.</b> This is a free, time-limited demo provided for evaluation. Features may change, break, or be removed.</p>'
+      + '<p>3. <b>Licence.</b> You receive a personal, non-exclusive, non-transferable, revocable licence for personal use. You may not resell, copy, decompile, or redistribute the App.</p>'
+      + '<p>4. <b>Acceptable use.</b> Do not use the App unlawfully or to store data you have no right to store.</p>'
+      + '<p>5. <b>Intellectual property.</b> The App, its design, code, and marks are owned by MLC Consultancy (Mordechaos Lordreizehn Codex Consultancy) and Patrick Joseph C. Panuncillon. All rights reserved.</p>'
+      + '<p>6. <b>No warranty.</b> The App is provided "AS IS" and "AS AVAILABLE", without warranties of any kind, express or implied, including merchantability, fitness for a particular purpose, accuracy, or availability.</p>'
+      + '<p>7. <b>Limitation of liability.</b> To the maximum extent permitted by law, the developer is not liable for any loss or damage (including financial loss, lost data, or lost profits) arising from your use of, or inability to use, the App.</p>'
+      + '<p>8. <b>Termination.</b> Access is time-limited (the demo period) and may be suspended or ended at any time.</p>'
+      + '<p>9. <b>Governing law.</b> These Terms are governed by the laws of the Republic of the Philippines.</p>'
+      + '<p>10. <b>Changes.</b> These Terms may be updated; continued use means you accept the changes.</p>'
+      + '<p style="color:var(--cream);font-weight:700;margin-top:14px;">Privacy Policy</p>'
+      + '<p>1. <b>What is stored.</b> The transactions you enter are stored <b>only on this device</b> (your browser\'s local storage). They are not uploaded to any server by default.</p>'
+      + '<p>2. <b>Usage activity.</b> To improve the App, anonymous <b>usage events</b> (e.g. which features you open, that a transaction was logged, with its category/amount) are recorded on this device. This stays on your device.</p>'
+      + '<p>3. <b>What you share.</b> Data leaves your device only when <b>you choose</b> to use "Export my data" and send it to the developer (for feedback or to unlock continued use). You control that.</p>'
+      + '<p>4. <b>No sale of data.</b> Your data is never sold or shared with advertisers.</p>'
+      + '<p>5. <b>Retention & deletion.</b> You can wipe all local data anytime via Settings -> Sign Out / Wipe This Device.</p>'
+      + '<p>6. <b>Security.</b> Access is protected by your PIN. Keep your device and PIN secure.</p>'
+      + '<p>7. <b>Children.</b> Not intended for children under 13.</p>'
+      + '<p>8. <b>Contact.</b> Patrick Joseph C. Panuncillon , patrick@teamenoch.com.</p>'
+      + '<p style="color:var(--cream);font-weight:700;margin-top:14px;">Build &amp; software</p>'
+      + '<p>App: The Millionaire Engine (demo build). Version 3.4 / legal v' + APP_LEGAL_VERSION + '. Developer: MLC Consultancy (Mordechaos Lordreizehn Codex Consultancy). Built with web technologies (Chart.js, SortableJS). Status: beta / evaluation.</p>'
+      + '<p style="color:var(--text-subtle);margin-top:10px;font-size:11px;">&copy; 2026 MLC Consultancy. All rights reserved.</p>';
+  }
+  function openLegal() { const b = document.getElementById('legal-body'); if (b) b.innerHTML = legalHtml(); const m = document.getElementById('legal-modal'); if (m) m.classList.add('open'); }
+  function closeLegal() { const m = document.getElementById('legal-modal'); if (m) m.classList.remove('open'); }
+  function newsHtml() {
+    return ''
+      + '<p style="color:var(--cream);font-weight:700;margin:0 0 6px;">Version 3.7 (current) — what\'s new</p>'
+      + '<div class="news-item"><b>🧾 Payment cards up top</b> <span class="news-tag">New</span><br>Overdue, Due This Week, and Upcoming now sit as cards at the top with their counts and totals. Tap one to jump straight to that list.</div>'
+      + '<div class="news-item"><b>🔤 Cleaner headings</b> <span class="news-tag">Improved</span><br>Month labels and section headers now share one consistent font across the dashboard.</div>'
+      + '<p style="color:var(--cream);font-weight:700;margin:18px 0 6px;">Version 3.6 — what\'s new</p>'
+      + '<div class="news-item"><b>🔓 Biometric unlock</b> <span class="news-tag">New</span><br>Turn on fingerprint / Face ID from the lock screen or Settings and skip the PIN. Your PIN always still works, and your data stays encrypted on this device.</div>'
+      + '<div class="news-item"><b>🗓️ One month, everywhere</b> <span class="news-tag">New</span><br>Swiping the summary cards now moves the Money Map, the Spending-by-category chart, and the daily Calendar together, all to the same month.</div>'
+      + '<div class="news-item"><b>⚡ Faster swiping</b> <span class="news-tag">Improved</span><br>Months are cached and pre-loaded, so flicking between them is near-instant after the first look.</div>'
+      + '<div class="news-item"><b>👆 Clearer Payments</b> <span class="news-tag">Improved</span><br>Each Overdue / Due / Upcoming section now has an obvious Show button and a turn arrow, so the toggle is impossible to miss.</div>'
+      + '<p style="color:var(--cream);font-weight:700;margin:18px 0 6px;">Version 3.5 — what\'s new</p>'
+      + '<div class="news-item"><b>📊 Month-by-month summary</b> <span class="news-tag">New</span><br>Swipe the Income, Expenses, Net, and Overdue cards left or right (or use the ‹ › arrows) to review any month, now with a smooth slide. The Money Map and the Spending-by-category chart travel with them, so everything always matches the month you\'re viewing.</div>'
+      + '<div class="news-item"><b>✏️ Tap to confirm</b> <span class="news-tag">Improved</span><br>Quick tiles (Gas, Groceries, and the rest) now open with the amount ready to edit, so a tap never logs by accident.</div>'
+      + '<p style="color:var(--cream);font-weight:700;margin:18px 0 6px;">Version 3.4 — what\'s new</p>'
+      + '<div class="news-item"><b>📅 Interactive calendar</b> <span class="news-tag">New</span><br>Swipe (or use the arrows) to move month to month. Tap any day to see its money in and out and settle a bill due that day. Upcoming bills are marked in gold.</div>'
+      + '<div class="news-item"><b>🧾 Payments hub</b> <span class="news-tag">New</span><br>Every bill in one place, grouped into Overdue, Due this week, and Upcoming. Tap a section to open it; each row shows its month.</div>'
+      + '<div class="news-item"><b>⚠️ Overdue at a glance</b> <span class="news-tag">New</span><br>Tap the Overdue card to see exactly which bills are past due, with a Pay button on each. The count always matches your Payments list.</div>'
+      + '<div class="news-item"><b>👆 Swipe to settle</b> <span class="news-tag">Improved</span><br>On any bill, swipe right to mark Paid, swipe left to Delete, cleaner and clearer.</div>'
+      + '<div class="news-item"><b>✅ Sharper numbers</b> <span class="news-tag">Fixed</span><br>Income and expense totals are more accurate, your salary no longer counts as spending.</div>'
+      + '<p style="color:var(--cream);font-weight:700;margin:18px 0 8px;">On the roadmap</p>'
+      + '<div class="news-item"><b>📸 Grocery scanner</b> <span class="news-tag">Planned</span><br>Snap prices while you shop; the app builds your grocery list and a day summary automatically.</div>'
+      + '<div class="news-item"><b>🤖 AI assistant</b> <span class="news-tag">Planned</span><br>A daily brief that reads your habits and coaches your next move.</div>'
+      + '<div class="news-item"><b>🎯 Financial discipline</b> <span class="news-tag">Planned</span><br>Streaks, gentle nudges, and goals to keep your money habits consistent.</div>'
+      + '<div class="news-item"><b>⛽ Gas price insights</b> <span class="news-tag">Exploring</span><br>Track and anticipate fuel costs so you fill up smarter.</div>'
+      + '<div class="news-item"><b>📈 Stock insights</b> <span class="news-tag">Exploring</span><br>Your holdings and market signals, in one place.</div>'
+      + '<p style="font-size:11px;color:var(--text-subtle);margin-top:14px;line-height:1.5;">Roadmap items are plans, not commitments, and may change. Your feedback shapes what ships first.</p>';
+  }
+  function openNews() { const b = document.getElementById('news-body'); if (b) b.innerHTML = newsHtml(); const m = document.getElementById('news-modal'); if (m) m.classList.add('open'); }
+  function closeNews() { const m = document.getElementById('news-modal'); if (m) m.classList.remove('open'); }
+
+  // ===== Demo: 1-month trial, consent, unlock, re-engagement =====
+  const DEMO_TRIAL_DAYS = 30;
+  const DEMO_UNLOCK_CODE = 'MLCC-RENEW-2026';
+  function trialUntil() { return parseInt(localStorage.getItem('engine_demo_until') || '0', 10); }
+  function startTrialIfNeeded() { if (SANDBOX && !trialUntil()) { try { localStorage.setItem('engine_demo_until', String(Date.now() + DEMO_TRIAL_DAYS * 86400000)); } catch (e) {} } }
+  function isTrialExpired() { const u = trialUntil(); return u > 0 && Date.now() > u; }
+  function showConsent() {
+    document.getElementById('app-main').style.display = 'none';
+    document.getElementById('lock-screen').classList.remove('open');
+    document.getElementById('config-screen').classList.remove('open');
+    const is = document.getElementById('install-screen'); if (is) is.classList.remove('open');
+    hideInstallUI();
+    const c = document.getElementById('consent-screen'); if (c) c.classList.add('open');
+  }
+  function acceptConsent() {
+    const cb = document.getElementById('consent-check');
+    if (cb && !cb.checked) { showToast('Please tick the box to agree first', 'error'); return; }
+    try { localStorage.setItem('engine_demo_consent', '1'); const log = JSON.parse(localStorage.getItem('engine_demo_consent_log') || '[]'); log.push({ t: Date.now(), v: APP_LEGAL_VERSION }); localStorage.setItem('engine_demo_consent_log', JSON.stringify(log)); } catch (e) {}
+    logEvent('consent_accepted');
+    const c = document.getElementById('consent-screen'); if (c) c.classList.remove('open');
+    if ('Notification' in window && Notification.permission === 'default') { try { Notification.requestPermission(); } catch (e) {} }
+    // Next page: install the app, then the demo (skip the install page if already installed)
+    if (isStandalone()) proceedAfterConsent(); else showInstallStep();
+  }
+  function proceedAfterConsent() {
+    const is = document.getElementById('install-screen'); if (is) is.classList.remove('open');
+    const stored = localStorage.getItem(STORAGE_KEY_CONFIG);
+    if (!stored) showConfig();
+    else if (isTrialExpired()) showExpired();
+    else showLock();
+  }
+  function showInstallStep() {
+    document.getElementById('app-main').style.display = 'none';
+    document.getElementById('lock-screen').classList.remove('open');
+    document.getElementById('config-screen').classList.remove('open');
+    const c = document.getElementById('consent-screen'); if (c) c.classList.remove('open');
+    hideInstallUI();
+    const s = document.getElementById('install-screen'); if (s) s.classList.add('open');
+  }
+  async function installFromStep() {
+    if (isStandalone()) { proceedAfterConsent(); return; }
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      let outcome = 'dismissed';
+      try { const r = await deferredPrompt.userChoice; outcome = r && r.outcome; } catch (e) {}
+      deferredPrompt = null; hideInstallUI();
+      if (outcome === 'accepted') { showToast('Installed. Continuing to the demo...', 'success'); setTimeout(proceedAfterConsent, 700); }
+      return;
+    }
+    const ua = navigator.userAgent || '';
+    if (isInAppBrowser() && /Android/i.test(ua)) { showToast('Opening in Chrome to install. If nothing happens, tap the menu above and choose Open in Chrome.', 'success'); setTimeout(openInChrome, 700); return; }
+    if (/iPhone|iPad|iPod/i.test(ua)) { showToast('Tap the Share icon, then choose Add to Home Screen.', 'success'); return; }
+    showToast('Open your browser menu and tap Install app or Add to Home Screen.', 'success');
+  }
+  function skipInstall() { proceedAfterConsent(); }
+  function showExpired() {
+    document.getElementById('app-main').style.display = 'none';
+    document.getElementById('lock-screen').classList.remove('open');
+    document.getElementById('config-screen').classList.remove('open');
+    const e = document.getElementById('expired-screen'); if (e) e.classList.add('open');
+    logEvent('trial_expired');
+  }
+  function tryUnlockCode() {
+    const v = (document.getElementById('unlock-code').value || '').trim().toUpperCase();
+    const msg = document.getElementById('unlock-msg');
+    if (v === DEMO_UNLOCK_CODE) {
+      try { localStorage.setItem('engine_demo_until', String(Date.now() + DEMO_TRIAL_DAYS * 86400000)); localStorage.setItem('engine_demo_consent', '0'); } catch (e) {}
+      logEvent('trial_unlocked');
+      const ex = document.getElementById('expired-screen'); if (ex) ex.classList.remove('open');
+      showConsent();   // re-consent after unlock
+    } else if (msg) { msg.textContent = 'That code is not valid. Contact Patrick to get yours.'; }
+  }
+  function reminderCheck() {
+    if (!SANDBOX) return;
+    try {
+      const last = parseInt(localStorage.getItem('engine_demo_lastopen') || '0', 10);
+      const now = Date.now();
+      if (last && (now - last) > 7 * 86400000) {
+        setTimeout(function () { showToast('👋 Welcome back! A quick log keeps your money map sharp.', 'success'); }, 1300);
+        if ('Notification' in window && Notification.permission === 'granted') { try { new Notification('The Millionaire Engine', { body: "It's been a while, log today's spending to stay on track.", icon: 'icon-192.png?v=4' }); } catch (e) {} }
+      }
+      localStorage.setItem('engine_demo_lastopen', String(now));
+    } catch (e) {}
+  }
+  function sandboxBoot() {
+    if (localStorage.getItem('engine_demo_consent') !== '1') { showConsent(); return; }
+    const stored = localStorage.getItem(STORAGE_KEY_CONFIG);
+    if (!stored) { showConfig(); return; }
+    if (isTrialExpired()) { showExpired(); return; }
+    showLock();
+  }
+
+  // ===== Webhook =====
+  async function callWebhook(action, data = {}) {
+    if (SANDBOX) return sandboxWebhook(action, data);
+    if (!CFG || !CFG.url || !CFG.secret) throw new Error('Not unlocked');
+    const resp = await fetch(CFG.url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ secret: CFG.secret, action, data }),
+      redirect: 'follow'
+    });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const json = await resp.json();
+    if (!json.success) throw new Error(json.error || 'unknown error');
+    return json.result;
+  }
+
+  // ===== Cache =====
+  function readCache() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY_CACHE) || 'null'); } catch (e) { return null; }
+  }
+  function writeCache(data) {
+    try { localStorage.setItem(STORAGE_KEY_CACHE, JSON.stringify({ data, ts: Date.now() })); } catch (e) {}
+  }
+
+  // ===== Formatters =====
+  const peso = n => '₱' + Number(n || 0).toLocaleString('en-PH', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  const pesoShort = n => {
+    const v = Number(n || 0);
+    if (Math.abs(v) >= 1000000) return '₱' + (v / 1000000).toFixed(1) + 'M';
+    if (Math.abs(v) >= 1000) return '₱' + (v / 1000).toFixed(1) + 'k';
+    return peso(v);
+  };
+
+  function severityFor(item) {
+    const status = String(item.status || '').toLowerCase();
+    const category = String(item.category || '').toLowerCase();
+    const isFintech = category.includes('fintech') || category.includes('debt (cc)') || category.includes('fixed');
+    if (status === 'priority') return 'red';
+    if (status === 'unpaid') return 'red';
+    if (isFintech && status === 'pending') return 'orange';
+    if (status === 'pending') return 'yellow';
+    return 'neutral';
+  }
+
+  function renderMoneyMap(summary, breakdown) {
+    if (!summary) return;
+    const inc = summary.income_received || 0;
+    const out = summary.expenses_paid || 0;
+    const net = inc - out;
+    const set = function (id, v) { const e = document.getElementById(id); if (e) e.textContent = v; };
+    set('mm-month', summary.month || '');
+    set('mm-in', peso(inc));
+    set('mm-out', peso(out));
+    set('mm-net', (net < 0 ? '-' : '') + peso(Math.abs(net)));
+    const total = (inc + out) || 1;
+    const bi = document.getElementById('mm-bar-in'); if (bi) bi.style.width = (inc / total * 100) + '%';
+    const bo = document.getElementById('mm-bar-out'); if (bo) bo.style.width = (out / total * 100) + '%';
+    const host = document.getElementById('mm-cats'); if (!host) return;
+    const cats = (breakdown && breakdown.categories) ? breakdown.categories.slice() : [];
+    if (!cats.length) { host.innerHTML = '<div class="upcoming-empty" style="padding:10px;">No spending logged this month yet.</div>'; return; }
+    cats.sort(function (a, b) { return (b.amount || 0) - (a.amount || 0); });
+    const max = cats[0].amount || 1;
+    const palette = ['#E07856', '#E8B872', '#8BBF9F', '#D45A5A', '#E8C865', '#7B9FB8'];
+    host.innerHTML = cats.slice(0, 6).map(function (c, i) {
+      const w = Math.max(4, (c.amount || 0) / max * 100);
+      return '<div class="mm-cat"><div class="mm-cat-name">' + escapeHtml(c.name || '-') + '</div>' +
+        '<div class="mm-cat-track"><div class="mm-cat-fill" style="width:' + w + '%;background:' + palette[i % palette.length] + '"></div></div>' +
+        '<div class="mm-cat-amt">' + pesoShort(c.amount || 0) + '</div></div>';
+    }).join('');
+  }
+
+  function renderKpi(summary) {
+    window.__SUMMARY = summary;
+    var mEl = document.getElementById('kpi-month');
+    if (mEl) mEl.textContent = (summary.month || 'This month') + (monthOffset === 0 ? ' · this month' : '');
+    document.getElementById('kpi-income').textContent = peso(summary.income_received);
+    document.getElementById('kpi-income-sub').textContent = summary.month;
+    document.getElementById('kpi-expense').textContent = peso(summary.expenses_paid);
+    document.getElementById('kpi-expense-sub').textContent = summary.expenses_pending ? '+ ' + peso(summary.expenses_pending) + ' pending' : 'this month';
+    const net = (summary.income_received || 0) - (summary.expenses_paid || 0);
+    document.getElementById('kpi-net').textContent = peso(net);
+    document.getElementById('kpi-net').style.color = net >= 0 ? 'var(--accent-sage)' : 'var(--accent-coral)';
+    document.getElementById('kpi-net-sub').textContent = net >= 0 ? '✓ positive' : '⚠ negative';
+    // Overdue / Due This Week / Upcoming cards are painted by renderUpcoming from the live Payments
+    // list, so the three stay consistent with each other and the Payments section, and (being
+    // today-relative) they don't shift when you swipe months.
+  }
+
+  function paintPaymentCards(groups) {
+    const suffix = { overdue: 'overdue', due: 'this week', upcoming: 'ahead' };
+    ['overdue', 'due', 'upcoming'].forEach(function (g) {
+      const arr = (groups && groups[g]) || [];
+      const count = arr.length;
+      const total = arr.reduce(function (s, x) { const it = x.item || x; return s + (it.amount || 0); }, 0);
+      const val = document.getElementById('kpi-' + g);
+      const sub = document.getElementById('kpi-' + g + '-sub');
+      const card = document.getElementById('kpi-' + g + '-card');
+      if (val) val.textContent = count;
+      if (sub) sub.textContent = count > 0 ? peso(total) + ' ' + suffix[g] : '✓ all clear';
+      if (card) { if (count === 0) card.classList.add('zero'); else card.classList.remove('zero'); }
+    });
+  }
+  // Tap a payment card → jump to that group in the Payments section and open it.
+  function openPaymentsGroup(g) {
+    const list = document.getElementById('upcoming-list');
+    const hdr = list ? list.querySelector('.list-sec[data-group="' + g + '"]') : null;
+    if (!hdr) {
+      const none = { overdue: 'Nothing overdue.', due: 'Nothing due this week.', upcoming: 'Nothing upcoming.' };
+      showToast('✓ ' + (none[g] || 'Nothing here.'), 'success');
+      if (list) list.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    if (collapsedGroups[g]) toggleGroup(g);
+    hdr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  let collapsedGroups = { overdue: true, due: true, upcoming: true };  // all groups start collapsed (minimized) on load
+  function toggleGroup(g) {
+    collapsedGroups[g] = !collapsedGroups[g];
+    const collapsed = collapsedGroups[g];
+    document.querySelectorAll('#upcoming-list .upcoming-item[data-group="' + g + '"]').forEach(function (el) { el.style.display = collapsed ? 'none' : ''; });
+    const hdr = document.querySelector('#upcoming-list .list-sec[data-group="' + g + '"]');
+    if (hdr) hdr.classList.toggle('collapsed', collapsed);
+  }
+  function renderUpcoming(items) {
+    window.__UPCOMING = items;
+    const list = document.getElementById('upcoming-list');
+    document.getElementById('upcoming-count').textContent = items.length;
+    if (items.length === 0) {
+      list.innerHTML = '<div class="upcoming-empty"><div class="check">✓</div><div>Nothing overdue, due, or upcoming.</div></div>';
+      paintPaymentCards({ overdue: [], due: [], upcoming: [] });
+      return;
+    }
+    const _t = new Date();
+    const todayStr = _t.getFullYear() + '-' + String(_t.getMonth() + 1).padStart(2, '0') + '-' + String(_t.getDate()).padStart(2, '0');
+    const _wk = new Date(_t.getFullYear(), _t.getMonth(), _t.getDate() + 7);
+    const weekStr = _wk.getFullYear() + '-' + String(_wk.getMonth() + 1).padStart(2, '0') + '-' + String(_wk.getDate()).padStart(2, '0');
+    const groupOf = (ds) => ds < todayStr ? 'overdue' : (ds <= weekStr ? 'due' : 'upcoming');
+    const labels = { overdue: '⚠ Overdue', due: 'Due this week', upcoming: 'Upcoming' };
+    const groups = { overdue: [], due: [], upcoming: [] };
+    items.slice(0, 40).forEach((item, idx) => { groups[groupOf(String(item.date))].push({ item: item, idx: idx }); });
+    paintPaymentCards(groups);
+    let html = '';
+    ['overdue', 'due', 'upcoming'].forEach((g) => {
+      const arr = groups[g];
+      if (!arr.length) return;
+      const total = arr.reduce((s, x) => s + (x.item.amount || 0), 0);
+      const collapsed = !!collapsedGroups[g];
+      html += '<div class="list-sec list-sec-' + g + (collapsed ? ' collapsed' : '') + '" data-group="' + g + '" onclick="toggleGroup(\'' + g + '\')">' +
+        '<span class="sec-chevron">▸</span>' +
+        '<span class="sec-label">' + labels[g] + '</span>' +
+        '<span class="sec-count">' + arr.length + ' · ' + pesoShort(total) + '<span class="sec-toggle"></span></span></div>';
+      arr.forEach(({ item, idx }) => {
+        const ds = String(item.date);
+        const d = new Date(ds + 'T00:00:00');
+        const mon = d.toLocaleDateString('en-US', { month: 'short' });
+        const num = d.getDate();
+        const overdue = g === 'overdue';
+        let sev = severityFor(item); if (overdue) sev = 'red';
+        const badgeClass = sev === 'red' ? 'priority' : sev === 'orange' ? 'unpaid' : 'pending';
+        const isFintech = String(item.category || '').toLowerCase().includes('fintech') ||
+                          String(item.category || '').toLowerCase().includes('debt (cc)');
+        const itemEnc = encodeURIComponent(item.item);
+        const dateEnc = encodeURIComponent(item.date);
+        html += `
+        <div class="upcoming-item sev-${sev}" data-item-id="${idx}" data-group="${g}" id="upc-${idx}"${collapsed ? ' style="display:none;"' : ''}>
+          <div class="swipe-action paid" aria-hidden="true"><span class="sa-label">Paid</span></div>
+          <div class="swipe-action del" aria-hidden="true"><span class="sa-label">Delete</span></div>
+          <div class="upcoming-inner">
+            <div class="upcoming-date">
+              <div class="mon">${mon}</div>
+              <div class="num">${num}</div>
+            </div>
+            <div class="upcoming-body">
+              <div class="upcoming-item-name">${escapeHtml(item.item)}</div>
+              <div class="upcoming-meta">
+                ${overdue ? '<span class="badge priority">OVERDUE</span>' : ''}
+                <span class="badge ${badgeClass}">${escapeHtml(item.status)}</span>
+                ${isFintech ? '<span class="badge fintech-tag">FINTECH</span>' : ''}
+                <span>${escapeHtml(item.category || '')}</span>
+              </div>
+            </div>
+            <div class="upcoming-right">
+              <div class="upcoming-amount sev-${sev}">${pesoShort(item.amount)}</div>
+              <button class="pay-btn" onclick="markPaid(${idx}, '${itemEnc}', '${dateEnc}', ${item.amount}, event)">Pay</button>
+            </div>
+          </div>
+        </div>`;
+      });
+    });
+    list.innerHTML = html;
+  }
+
+  // ============================================================
+  // MARK PAID, inline action on upcoming list
+  // Optimistic UI: flash row green, then fade-slide out, then refresh KPIs
+  // ============================================================
+  async function markPaid(idx, itemEnc, dateEnc, amount, ev) {
+    if (ev) { ev.stopPropagation(); }
+    const item = decodeURIComponent(itemEnc);
+    const date = decodeURIComponent(dateEnc);
+    const row = document.getElementById('upc-' + idx);
+    const btn = row ? row.querySelector('.pay-btn') : null;
+    if (!row || !btn) return;
+
+    // Quick haptic-ish confirmation
+    if (!confirm(`Mark "${item}" as Paid?\n\nAmount: ${peso(amount)}\nDate: ${date}\n\nThis updates the Google Sheet immediately.`)) return;
+
+    // OPTIMISTIC PHASE, flash row to paid state, show loading on button
+    row.classList.add('paying', 'paid-flash');
+    btn.classList.add('loading');
+    btn.textContent = 'Saving';
+
+    try {
+      // Call webhook to update status, uses search + date for precise targeting
+      const result = await callWebhook('update_master_log_status', {
+        search: item,
+        date: date,
+        status: 'Paid'
+      });
+
+      // SUCCESS, show ✓ Paid briefly, then fade out
+      btn.classList.remove('loading');
+      btn.classList.add('success');
+      btn.textContent = '✓ Paid';
+      showToast(`✓ ${item} marked Paid`, 'success');
+
+      // Remove row from list with smooth animation, then trigger background refresh
+      setTimeout(() => {
+        row.classList.add('removing');
+      }, 500);
+      setTimeout(() => {
+        // Decrement count badge optimistically
+        const countEl = document.getElementById('upcoming-count');
+        const currentCount = parseInt(countEl.textContent, 10) || 0;
+        if (currentCount > 0) countEl.textContent = currentCount - 1;
+        // If list is now visually empty, show empty state
+        const remaining = document.querySelectorAll('#upcoming-list .upcoming-item:not(.removing)').length;
+        if (remaining === 0) {
+          document.getElementById('upcoming-list').innerHTML =
+            '<div class="upcoming-empty"><div class="check">✓</div><div>No upcoming bills in the next 7 days.</div></div>';
+        }
+      }, 900);
+
+      // Background-refresh KPIs after the animation completes (no flicker)
+      setTimeout(() => { refreshAll(); }, 1100);
+
+    } catch (err) {
+      // REVERT optimistic state
+      row.classList.remove('paid-flash', 'paying');
+      btn.classList.remove('loading', 'success');
+      btn.textContent = 'Pay';
+      showToast('Failed: ' + err.message, 'error');
+    }
+  }
+
+  // ============================================================
+  // PER-ITEM ACTIONS, long-press ONE item in Next-7-Days to act on just it.
+  // Pops Edit / -1d / +1d / Delete + a red Cancel (Grab/Foodpanda style).
+  // Reschedule also reorders the date-sorted list. Every action hits the
+  // webhook, then refreshes from the sheet. Only one item open at a time.
+  // ============================================================
+  let EDIT_CTX = null;                       // { row, expect_item } while editing
+
+  (function injectActionsCss() {
+    const css =
+      '.upcoming-item.mg-active{background:rgba(255,255,255,0.07);border-radius:10px;}' +
+      '.upcoming-item.mg-active .pay-btn{display:none;}' +
+      '.upcoming-item.mg-grab{opacity:0.9;}' +
+      '.mg-drag{border-radius:16px;box-shadow:0 16px 40px rgba(0,0,0,0.6);background:#16302b;}' +
+      '.mg-ghost{opacity:1;background:rgba(232,184,114,0.08);border:2px dashed rgba(232,184,114,0.5);border-radius:12px;box-shadow:none;}' +
+      '.mg-ghost *{visibility:hidden;}' +
+      '.logo-p{font-family:\'Cormorant Garamond\',Georgia,serif;color:#F0B700;font-weight:700;font-size:1.85em;line-height:0.7;vertical-align:-0.08em;}' +
+      '.seg{display:flex;background:rgba(255,255,255,0.06);border-radius:10px;padding:3px;gap:3px;width:100%;}' +
+      '.seg-btn{flex:1;border:none;background:transparent;color:#9bb0aa;font-family:inherit;font-size:13px;font-weight:700;padding:9px;border-radius:8px;cursor:pointer;}' +
+      '.seg-btn.active{background:#E8B872;color:#1a4044;}' +
+      '.led-month{display:flex;justify-content:space-between;align-items:center;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#F5E9D4;margin:12px 0 8px;padding-bottom:6px;border-bottom:1px solid rgba(245,233,212,0.12);}' +
+      '.led-mtotal{font-weight:700;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;color:#E8C865;font-size:16px;letter-spacing:0.2px;}' +
+      '.led-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(245,233,212,0.05);}' +
+      '.led-item{font-size:13px;color:#F5E9D4;}' +
+      '.led-meta{font-size:11px;color:#9bb0aa;margin-top:2px;}' +
+      '.led-amt{font-size:13px;font-weight:700;white-space:nowrap;}' +
+      '.led-empty{font-size:12px;color:#9bb0aa;padding:6px 0 10px;}' +
+      '.mg-hint{font-size:11px;color:var(--text-subtle);margin-top:6px;}' +
+      '.mg-actions{display:flex;gap:6px;align-items:center;margin-top:10px;flex-wrap:wrap;}' +
+      '.mg-btn{font-size:12px;font-weight:600;border:none;border-radius:8px;padding:7px 11px;color:#F5E9D4;background:rgba(255,255,255,0.12);cursor:pointer;}' +
+      '.mg-btn:active{transform:scale(0.93);}' +
+      '.mg-btn.edit{background:rgba(56,154,196,0.32);}' +
+      '.mg-btn.del{background:rgba(192,57,43,0.40);color:#ffdede;}' +
+      '.mg-btn.cancel{background:#c0392b;color:#fff;margin-left:auto;}' +
+      '#custom-modal.editing #row-payment,#custom-modal.editing #row-notes{display:none;}' +
+      '.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}' +
+      '.cal-dow{text-align:center;font-size:10px;color:var(--text-subtle);padding:2px 0;font-weight:600;}' +
+      '.cal-cell{min-height:48px;border-radius:8px;background:rgba(255,255,255,0.04);padding:3px 4px;display:flex;flex-direction:column;gap:1px;overflow:hidden;}' +
+      '.cal-cell.empty{background:transparent;}' +
+      '.cal-cell.cal-today{outline:1.5px solid #8fc7a3;}' +
+      '.cal-day{font-size:11px;color:#F5E9D4;font-weight:600;}' +
+      '.cal-in{font-size:9px;color:#8BBF9F;font-weight:700;line-height:1.1;}' +
+      '.cal-out{font-size:9px;color:#E07856;font-weight:700;line-height:1.1;}' +
+      '.cal-cell{cursor:pointer;}' +
+      '.cal-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:2px;}' +
+      '.cal-arrow{background:rgba(255,255,255,0.06);border:none;color:#F5E9D4;width:30px;height:30px;border-radius:8px;font-size:18px;line-height:1;cursor:pointer;flex-shrink:0;}' +
+      '.cal-arrow:active{background:rgba(255,255,255,0.14);}' +
+      '.badge.nextmo{background:rgba(123,159,184,0.22);color:#a9c8de;}' +
+      '.upcoming-date .mon{font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#E8B872;font-weight:700;}' +
+      '.list-sec{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:13px 14px;color:#9bb0aa;display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none;-webkit-user-select:none;background:rgba(255,255,255,0.03);border-top:1px solid rgba(245,233,212,0.06);}' +
+      '.list-sec:first-child{border-top:none;}' +
+      '.list-sec:active{background:rgba(255,255,255,0.08);}' +
+      '.sec-chevron{display:inline-block;font-size:10px;flex:none;opacity:.9;transition:transform .2s ease;}' +
+      '.list-sec:not(.collapsed) .sec-chevron{transform:rotate(90deg);}' +
+      '.list-sec .sec-count{margin-left:auto;display:flex;align-items:center;gap:9px;font-weight:700;font-size:10px;letter-spacing:0;color:var(--text-subtle);text-transform:none;}' +
+      '.sec-toggle{font-size:9px;font-weight:800;letter-spacing:0.6px;border:1px solid transparent;border-radius:20px;padding:4px 11px;text-transform:uppercase;white-space:nowrap;transition:all .15s ease;}' +
+      '.list-sec.collapsed .sec-toggle:after{content:"Show ▾";}' +
+      '.list-sec:not(.collapsed) .sec-toggle:after{content:"Hide ▴";}' +
+      /* collapsed = filled call-to-action so new users see it is tappable; expanded = subtle outline */
+      '.list-sec.collapsed.list-sec-overdue .sec-toggle{color:#1a1512;background:#E0654E;border-color:#E0654E;box-shadow:0 1px 6px rgba(224,101,78,0.45);}' +
+      '.list-sec.collapsed.list-sec-due .sec-toggle{color:#1a1512;background:#E8C865;border-color:#E8C865;box-shadow:0 1px 6px rgba(232,200,101,0.4);}' +
+      '.list-sec.collapsed.list-sec-upcoming .sec-toggle{color:#12201d;background:#9bb0aa;border-color:#9bb0aa;box-shadow:0 1px 6px rgba(155,176,170,0.35);}' +
+      '.list-sec:not(.collapsed).list-sec-overdue .sec-toggle{color:#E0654E;border-color:rgba(224,101,78,0.55);background:rgba(224,101,78,0.14);}' +
+      '.list-sec:not(.collapsed).list-sec-due .sec-toggle{color:#E8C865;border-color:rgba(232,200,101,0.55);background:rgba(232,200,101,0.14);}' +
+      '.list-sec:not(.collapsed).list-sec-upcoming .sec-toggle{color:#9bb0aa;border-color:rgba(155,176,170,0.55);background:rgba(155,176,170,0.14);}' +
+      '.list-sec-overdue{color:#E0654E;}' +
+      '.list-sec-due{color:#E8C865;}' +
+      '.list-sec-upcoming{color:#9bb0aa;}' +
+      '.cal-cell.cal-haspend{background:rgba(232,184,114,0.13);}' +
+      '.cal-day.pend{color:#E8B872;}' +
+      '.cal-pend{font-size:9px;color:#E8B872;font-weight:700;line-height:1.1;}' +
+      '.day-sec{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#9bb0aa;margin:12px 0 8px;}' +
+      '.day-row{position:relative;overflow:hidden;border-bottom:1px solid rgba(245,233,212,0.08);touch-action:pan-y;}' +
+      '.day-row-inner{position:relative;z-index:2;display:flex;align-items:center;gap:10px;padding:10px 2px;background:var(--surface);}' +
+      '.day-row.show-paid .swipe-action.paid{opacity:1;}' +
+      '.day-row.show-del .swipe-action.del{opacity:1;}' +
+      '.day-row.armed .swipe-action .sa-label{transform:scale(1.06);}' +
+      '.day-row:not(.swiping) .day-row-inner{transition:transform 0.22s cubic-bezier(.22,.61,.36,1);}' +
+      '.day-row:last-child{border-bottom:none;}' +
+      '.day-row-main{flex:1;min-width:0;}' +
+      '.day-row-name{font-size:14px;font-weight:600;color:#F5E9D4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}' +
+      '.day-row-cat{font-size:11px;color:#9bb0aa;}' +
+      '.day-row-amt{font-size:14px;font-weight:700;white-space:nowrap;}' +
+      '.lock-logo{width:120px;height:120px;border-radius:28px;box-shadow:0 10px 30px rgba(0,0,0,0.5);margin:0 auto 14px;display:block;}' +
+      '.sig-script{font-family:\'Cinzel\',Garamond,serif;font-size:17px;font-weight:600;color:#F5E9D4;letter-spacing:1.2px;}' +
+      '.sig-script a{color:inherit;text-decoration:none;}' +
+      '.upcoming-item{touch-action:pan-y;}' +
+      '.upcoming-item:not(.mg-drag):not(.mg-ghost) .upcoming-inner{transition:transform 0.22s cubic-bezier(.22,.61,.36,1);}' +
+      '.upcoming-item.swiping .upcoming-inner{transition:none;}' +
+      '@keyframes mgwiggle{0%{transform:rotate(0)}25%{transform:rotate(-1.5deg)}75%{transform:rotate(1.5deg)}100%{transform:rotate(0)}}' +
+      '.mg-wiggle{animation:mgwiggle 0.16s ease-in-out 2;}' +
+      '.install-banner{position:fixed;left:12px;right:12px;bottom:14px;z-index:200;display:none;align-items:center;gap:10px;background:#16302b;border:1px solid rgba(245,233,212,0.12);border-radius:14px;padding:10px 12px;box-shadow:0 12px 34px rgba(0,0,0,0.5);}' +
+      '.install-banner.show{display:flex;}' +
+      '.ib-icon{width:40px;height:40px;border-radius:10px;}' +
+      '.ib-text{flex:1;min-width:0;}' +
+      '.ib-title{font-size:13px;font-weight:700;color:#F5E9D4;}' +
+      '.ib-sub{font-size:11px;color:#9bb0aa;}' +
+      '.ib-btn{background:#8fc7a3;color:#0c2a25;border:none;border-radius:8px;padding:8px 14px;font-weight:700;cursor:pointer;}' +
+      '.ib-x{background:none;border:none;color:#9bb0aa;font-size:20px;cursor:pointer;padding:0 4px;}' +
+      '.mm-card{padding:14px;}' +
+      '.mm-flow{display:flex;align-items:stretch;gap:6px;}' +
+      '.mm-node{flex:1;background:rgba(255,255,255,0.04);border-radius:10px;padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:3px;}' +
+      '.mm-k{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#9bb0aa;}' +
+      '.mm-v{font-size:15px;font-weight:700;}' +
+      '.mm-in .mm-v{color:#8BBF9F;}' +
+      '.mm-out .mm-v{color:#E07856;}' +
+      '.mm-net .mm-v{color:#F5E9D4;}' +
+      '.mm-arrow{align-self:center;color:#6f8580;font-size:15px;}' +
+      '.mm-bar{display:flex;height:10px;border-radius:6px;overflow:hidden;margin:12px 0 4px;background:rgba(255,255,255,0.06);}' +
+      '.mm-bar-in{background:#8BBF9F;transition:width 0.4s ease;}' +
+      '.mm-bar-out{background:#E07856;transition:width 0.4s ease;}' +
+      '.mm-where{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#9bb0aa;margin:14px 0 9px;}' +
+      '.mm-cat{display:flex;align-items:center;gap:8px;margin-bottom:8px;}' +
+      '.mm-cat-name{font-size:12px;color:#F5E9D4;width:38%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}' +
+      '.mm-cat-track{flex:1;height:8px;background:rgba(255,255,255,0.06);border-radius:5px;overflow:hidden;}' +
+      '.mm-cat-fill{height:100%;border-radius:5px;transition:width 0.4s ease;}' +
+      '.mm-cat-amt{font-size:11px;color:#cdd8d4;width:62px;text-align:right;}' +
+      '.upcoming-item{position:relative;}' +
+      '.swipe-word{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:\'Cinzel\',Georgia,serif;font-weight:700;font-size:20px;letter-spacing:4px;text-transform:uppercase;opacity:0;pointer-events:none;z-index:5;}' +
+      '.seg-btn.seg-expense{color:#E07856;}' +
+      '.seg-btn.seg-income{color:#8BBF9F;}' +
+      '.seg-btn.seg-expense.active{background:#E07856;color:#221107;}' +
+      '.seg-btn.seg-income.active{background:#8BBF9F;color:#0c2a25;}' +
+      '.rec-btn{width:100%;border:1px solid rgba(245,233,212,0.18);background:rgba(255,255,255,0.04);color:#9bb0aa;font-family:inherit;font-size:13px;font-weight:700;padding:11px;border-radius:10px;cursor:pointer;letter-spacing:0.3px;}' +
+      '.rec-btn.on{background:rgba(232,184,114,0.18);border-color:#E8B872;color:#E8B872;}' +
+      '.brand-cross{width:0.95em;height:0.95em;vertical-align:-0.14em;margin:0 0.12em;display:inline-block;}' +
+      '.tut-step{padding:8px 0;border-bottom:1px solid rgba(245,233,212,0.07);}' +
+      '.quick-btn.uc{position:relative;border:1px dashed rgba(232,200,101,0.45);}' +
+      '.quick-btn.uc .amt{color:#E8C865;font-size:10px;}' +
+      '.quick-btn.uc::after{content:\'🚧\';position:absolute;top:5px;right:7px;font-size:12px;}' +
+      '.tour-root{position:fixed;inset:0;z-index:398;display:none;}' +
+      '.tour-root.open{display:block;}' +
+      '.tour-block{position:fixed;inset:0;z-index:398;}' +
+      '.tour-spot{position:fixed;z-index:399;pointer-events:none;left:0;top:0;width:0;height:0;transition:left 0.3s cubic-bezier(0.4,0,0.2,1),top 0.3s cubic-bezier(0.4,0,0.2,1),width 0.3s cubic-bezier(0.4,0,0.2,1),height 0.3s cubic-bezier(0.4,0,0.2,1);}' +
+      '.tour-tip{position:fixed;z-index:400;background:#16302b;border:1px solid rgba(245,233,212,0.16);border-radius:16px;padding:18px;max-width:300px;width:calc(100vw - 32px);box-shadow:0 18px 50px rgba(0,0,0,0.6);text-align:left;transition:left 0.25s ease,top 0.25s ease;}' +
+      '.tour-dots{display:flex;gap:6px;margin-bottom:14px;}' +
+      '.tour-dot{width:7px;height:7px;border-radius:50%;background:rgba(245,233,212,0.22);}' +
+      '.tour-dot.active{background:#E8B872;}' +
+      '.tour-title{font-family:\'Cinzel\',Georgia,serif;font-size:18px;color:#F5E9D4;margin-bottom:8px;letter-spacing:0.5px;}' +
+      '.tour-body{font-size:13.5px;color:#cdd8d4;line-height:1.55;}' +
+      '.tour-actions{display:flex;justify-content:space-between;align-items:center;margin-top:18px;}' +
+      '.tour-arrow{background:rgba(245,233,212,0.08);border:1px solid rgba(245,233,212,0.2);color:#F5E9D4;width:40px;height:40px;border-radius:50%;font-size:22px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;}' +
+      '.tour-next{background:#E8B872;color:#1a4044;border:none;border-radius:10px;padding:11px 24px;font-weight:700;font-size:14px;cursor:pointer;}' +
+      '.news-item{padding:11px 0;border-bottom:1px solid rgba(245,233,212,0.07);font-size:13px;color:#cdd8d4;line-height:1.55;}' +
+      '.news-tag{display:inline-block;font-size:9px;font-weight:700;background:rgba(232,200,101,0.18);color:#E8C865;border-radius:6px;padding:2px 7px;letter-spacing:0.6px;text-transform:uppercase;vertical-align:middle;}';
+    const s = document.createElement('style'); s.textContent = css; document.head.appendChild(s);
+  })();
+
+  function addDays(dateStr, n) {
+    const d = new Date(dateStr + 'T00:00:00'); d.setDate(d.getDate() + n);
+    return d.toISOString().slice(0, 10);
+  }
+  function _upc(idx) { return (window.__UPCOMING || [])[idx]; }
+
+  function closeItemActions() {
+    document.querySelectorAll('#upcoming-list .upcoming-item.mg-active').forEach(el => {
+      el.classList.remove('mg-active', 'mg-grab');
+      const a = el.querySelector('.mg-actions'); if (a) a.remove();
+      const h = el.querySelector('.mg-hint'); if (h) h.remove();
+    });
+  }
+
+  function openItemActions(idx) {
+    closeItemActions();
+    const list = document.getElementById('upcoming-list');
+    const el = list && list.querySelector('.upcoming-item[data-item-id="' + idx + '"]');
+    if (!el) return;
+    el.classList.add('mg-active');
+    const panel = document.createElement('div');
+    panel.className = 'mg-actions';
+    panel.innerHTML =
+      '<button class="mg-btn edit" onclick="mgEdit(' + idx + ',event)">✏️ Edit</button>' +
+      '<button class="mg-btn" onclick="mgResched(' + idx + ',-1,event)">◀ −1 day</button>' +
+      '<button class="mg-btn" onclick="mgResched(' + idx + ',1,event)">+1 day ▶</button>' +
+      '<button class="mg-btn del" onclick="mgDelete(' + idx + ',event)">🗑 Delete</button>' +
+      '<button class="mg-btn cancel" onclick="closeItemActions()">✕ Cancel</button>';
+    const body = el.querySelector('.upcoming-body') || el;
+    body.appendChild(panel);
+    const hint = document.createElement('div');
+    hint.className = 'mg-hint';
+    hint.textContent = '↕ Drag this item onto another day to reschedule';
+    body.appendChild(hint);
+    if (navigator.vibrate) { try { navigator.vibrate(15); } catch (e) {} }
+  }
+
+  // Drag-to-reschedule powered by SortableJS: smooth animation, auto-scroll near
+  // edges, and normal page scrolling preserved (drag only starts after a long-press
+  // on touch). Long-press without moving opens the per-item action panel.
+  function initSortable() {
+    const list = document.getElementById('upcoming-list');
+    if (!list || list._sortInit || !window.Sortable) return;
+    list._sortInit = true;
+    window.Sortable.create(list, {
+      draggable: '.upcoming-item',
+      filter: 'button, a, .mg-actions',
+      preventOnFilter: false,
+      delay: 350,
+      delayOnTouchOnly: true,
+      touchStartThreshold: 8,
+      animation: 160,
+      easing: 'cubic-bezier(0.2, 0, 0, 1)',
+      forceFallback: true,
+      fallbackTolerance: 4,
+      scroll: true,
+      scrollSensitivity: 90,
+      scrollSpeed: 14,
+      bubbleScroll: true,
+      chosenClass: 'mg-grab',
+      ghostClass: 'mg-ghost',
+      fallbackClass: 'mg-drag',
+      fallbackOnBody: true,
+      onChoose: function (evt) { closeItemActions(); if (evt && evt.item) evt.item.classList.add('mg-wiggle'); if (navigator.vibrate) { try { navigator.vibrate(12); } catch (e) {} } },
+      onEnd: function (evt) {
+        const el = evt.item;
+        el.classList.remove('mg-wiggle');
+        const idx = el.getAttribute('data-item-id');
+        if (evt.oldIndex === evt.newIndex) { openItemActions(idx); return; }   // long-press, no move => show options
+        const dragged = _upc(idx); if (!dragged) { refreshAll(); return; }
+        const prev = (el.previousElementSibling && el.previousElementSibling.classList.contains('upcoming-item')) ? el.previousElementSibling : null;
+        const nxt  = (el.nextElementSibling && el.nextElementSibling.classList.contains('upcoming-item')) ? el.nextElementSibling : null;
+        const refItem = (prev || nxt) ? _upc((prev || nxt).getAttribute('data-item-id')) : null;
+        const newDate = refItem ? refItem.date : dragged.date;
+        if (!refItem || newDate === dragged.date) { refreshAll(); return; }
+        showToast('Rescheduling → ' + newDate + ' …', 'success');
+        callWebhook('update_master_log_row', { row: dragged.row, expect_item: dragged.item, date: newDate })
+          .then(function () { refreshAll(); })
+          .catch(function (err) { showToast('Failed: ' + err.message, 'error'); refreshAll(); });
+      }
+    });
+    // tap anywhere outside an open panel dismisses it
+    document.addEventListener('pointerdown', function (e) {
+      if (e.target.closest('.mg-actions') || e.target.closest('.upcoming-item.mg-active')) return;
+      closeItemActions();
+    });
+
+    // ---- horizontal swipe: right = Paid, left = Cancelled ----
+    let sw = null;
+    list.addEventListener('pointerdown', function (e) {
+      if (e.target.closest('button') || e.target.closest('a')) return;
+      const item = e.target.closest('.upcoming-item'); if (!item) return;
+      if (item.classList.contains('mg-grab')) return;
+      sw = { idx: item.getAttribute('data-item-id'), el: item, inner: item.querySelector('.upcoming-inner'), sx: e.clientX, sy: e.clientY, dx: 0, locked: false, hapt: false };
+    });
+    list.addEventListener('pointermove', function (e) {
+      if (!sw) return;
+      const dx = e.clientX - sw.sx, dy = e.clientY - sw.sy;
+      if (!sw.locked) {
+        if (Math.abs(dy) > 10 && Math.abs(dy) >= Math.abs(dx)) { sw = null; return; }
+        if (Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy) * 1.2) { sw.locked = true; sw.el.classList.add('swiping'); }
+        else return;
+      }
+      e.preventDefault();
+      sw.dx = dx;
+      if (sw.inner) sw.inner.style.transform = 'translateX(' + dx + 'px)';
+      sw.el.classList.toggle('show-paid', dx > 0);
+      sw.el.classList.toggle('show-del', dx < 0);
+      const th = sw.el.offsetWidth * 0.4;
+      sw.el.classList.toggle('armed', Math.abs(dx) > th);
+      if (!sw.hapt && Math.abs(dx) > th) { sw.hapt = true; if (navigator.vibrate) { try { navigator.vibrate(10); } catch (er) {} } }
+      else if (sw.hapt && Math.abs(dx) <= th) { sw.hapt = false; }
+    });
+    function endSwipe() {
+      if (!sw || !sw.locked) { sw = null; return; }
+      const el = sw.el, inner = sw.inner, dx = sw.dx, idx = sw.idx, th = el.offsetWidth * 0.4;
+      el.classList.remove('swiping', 'armed');
+      if (dx > th) swipeSettle(idx, 'paid', el);
+      else if (dx < -th) swipeSettle(idx, 'delete', el);
+      else { if (inner) inner.style.transform = ''; el.classList.remove('show-paid', 'show-del'); }
+      sw = null;
+    }
+    list.addEventListener('pointerup', endSwipe);
+    list.addEventListener('pointercancel', endSwipe);
+  }
+  window.addEventListener('load', initSortable);
+
+  async function mgResched(idx, delta, ev) {
+    if (ev) ev.stopPropagation();
+    const it = _upc(idx); if (!it) return;
+    const newDate = addDays(it.date, delta);
+    showToast('Rescheduling → ' + newDate + ' …', 'success');
+    try {
+      await callWebhook('update_master_log_row', { row: it.row, expect_item: it.item, date: newDate });
+      await refreshAll();
+    } catch (e) { showToast('Failed: ' + e.message, 'error'); }
+  }
+
+  async function mgDelete(idx, ev) {
+    if (ev) ev.stopPropagation();
+    const it = _upc(idx); if (!it) return;
+    if (!confirm('Delete "' + it.item + '"  (' + peso(it.amount) + ', ' + it.date + ')?\n\nThis removes it from the Google Sheet.')) return;
+    try {
+      await callWebhook('delete_master_log_row', { row: it.row, expect_item: it.item });
+      showToast('Deleted ' + it.item, 'success');
+      await refreshAll();
+    } catch (e) { showToast('Failed: ' + e.message, 'error'); }
+  }
+
+  async function swipeSettle(idx, action, el) {
+    const inner = el ? el.querySelector('.upcoming-inner') : null;
+    const it = _upc(idx);
+    if (!it) { if (inner) inner.style.transform = ''; if (el) el.classList.remove('show-paid', 'show-del'); return; }
+    const paid = (action === 'paid');
+    logEvent(paid ? 'swipe_paid' : 'swipe_delete');
+    el.classList.add(paid ? 'show-paid' : 'show-del');
+    if (inner) {
+      inner.style.transition = 'transform 0.24s cubic-bezier(.4,0,.2,1)';
+      inner.style.transform = 'translateX(' + (paid ? '100%' : '-100%') + ')';
+    }
+    // premium close: collapse the row height after the inner has slid away
+    try {
+      const h = el.offsetHeight;
+      el.style.height = h + 'px'; el.style.overflow = 'hidden';
+      void el.offsetHeight;
+      el.style.transition = 'height 0.26s ease 0.15s, opacity 0.26s ease 0.15s';
+      el.style.height = '0px'; el.style.opacity = '0';
+    } catch (e) {}
+    try {
+      if (paid) {
+        await callWebhook('update_master_log_status', { search: it.item, date: it.date, status: 'Paid' });
+        showToast('✓ Paid, ' + it.item, 'success');
+      } else {
+        await callWebhook('delete_master_log_row', { row: it.row, expect_item: it.item });
+        showToast('🗑 Deleted, ' + it.item, 'success');
+      }
+      setTimeout(function () { refreshAll(); }, 460);
+    } catch (e) {
+      if (inner) { inner.style.transition = ''; inner.style.transform = ''; }
+      el.classList.remove('show-paid', 'show-del');
+      el.style.height = ''; el.style.opacity = ''; el.style.overflow = ''; el.style.transition = '';
+      showToast('Failed: ' + e.message, 'error');
+    }
+  }
+
+  function mgEdit(idx, ev) {
+    if (ev) ev.stopPropagation();
+    const it = _upc(idx); if (!it) return;
+    EDIT_CTX = { row: it.row, expect_item: it.item };
+    document.getElementById('form-date').value = it.date;
+    document.getElementById('form-item').value = it.item;
+    document.getElementById('form-category').value = it.category || '';
+    document.getElementById('form-amount').value = it.amount;
+    document.getElementById('form-status').value = it.status || 'Pending';
+    document.querySelector('#custom-modal .modal-title').textContent = 'Edit Entry';
+    document.getElementById('form-submit').textContent = 'Save Changes';
+    document.getElementById('custom-modal').classList.add('open', 'editing');
+    closeItemActions();
+  }
+
+  if (window.Sortable) initSortable();
+
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  const CHART_COLORS = {
+    incomeBg: 'rgba(139, 191, 159, 0.7)',
+    expenseBg: 'rgba(224, 120, 86, 0.7)',
+    grid: 'rgba(245, 233, 212, 0.08)',
+    text: 'rgba(245, 233, 212, 0.65)'
+  };
+
+  function renderMonthlyChart(history) {
+    const ctx = document.getElementById('chart-monthly');
+    if (!ctx) return;
+    document.getElementById('chart-sub-1').textContent = `Last ${history.length} months, income vs expenses paid`;
+    const labels = history.map(m => m.short);
+    const incomeData = history.map(m => m.income);
+    const expenseData = history.map(m => m.expense_paid);
+
+    if (monthlyChart) monthlyChart.destroy();
+    monthlyChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          { label: 'Income', data: incomeData, borderColor: '#8BBF9F', backgroundColor: 'rgba(139,191,159,0.15)', borderWidth: 2.5, tension: 0.35, fill: true, pointRadius: 3, pointBackgroundColor: '#8BBF9F' },
+          { label: 'Expenses', data: expenseData, borderColor: '#E07856', backgroundColor: 'rgba(224,120,86,0.12)', borderWidth: 2.5, tension: 0.35, fill: true, pointRadius: 3, pointBackgroundColor: '#E07856' }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top', align: 'end', labels: { color: CHART_COLORS.text, font: { size: 11 }, boxWidth: 12, boxHeight: 12, padding: 8 } },
+          tooltip: {
+            backgroundColor: 'rgba(26, 64, 68, 0.95)', titleColor: '#F5E9D4', bodyColor: '#F5E9D4',
+            padding: 10, cornerRadius: 8,
+            callbacks: { label: (ctx) => ctx.dataset.label + ': ' + peso(ctx.parsed.y) }
+          }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: CHART_COLORS.text } },
+          y: { grid: { color: CHART_COLORS.grid }, ticks: { color: CHART_COLORS.text, callback: (v) => pesoShort(v) }, beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  function renderCategoryChart(breakdown) {
+    const ctx = document.getElementById('chart-categories');
+    if (!ctx) return;
+    const cats = breakdown.categories || [];
+    document.getElementById('chart-sub-2').textContent = `${breakdown.month || ''}, ${breakdown.status_filter || ''}`;
+
+    if (categoryChart) categoryChart.destroy();
+    if (cats.length === 0) {
+      const c2 = ctx.getContext('2d');
+      c2.clearRect(0, 0, ctx.width, ctx.height);
+      c2.fillStyle = CHART_COLORS.text;
+      c2.font = '14px sans-serif';
+      c2.textAlign = 'center';
+      c2.fillText('No data for this filter', ctx.width / 2, ctx.height / 2);
+      return;
+    }
+    const palette = ['#E07856', '#E8B872', '#8BBF9F', '#D45A5A', '#E8C865', '#7B9FB8', '#B47CC7', '#9FB87B', '#C77C7C', '#6E96B5'];
+    const catTotal = cats.reduce((s, c) => s + (c.amount || 0), 0) || 1;
+    categoryChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: cats.map(c => c.name),
+        datasets: [{ data: cats.map(c => c.amount), backgroundColor: cats.map((_, i) => palette[i % palette.length]), borderColor: 'rgba(15,51,46,0.6)', borderWidth: 2 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, cutout: '56%',
+        plugins: {
+          legend: { position: 'right', labels: { color: CHART_COLORS.text, font: { size: 10 }, boxWidth: 12, boxHeight: 12, padding: 6 } },
+          tooltip: {
+            backgroundColor: 'rgba(26, 64, 68, 0.95)', titleColor: '#F5E9D4', bodyColor: '#F5E9D4',
+            padding: 10, cornerRadius: 8,
+            callbacks: { label: (ctx) => ctx.label + ': ' + peso(ctx.parsed) + ' (' + Math.round(ctx.parsed / catTotal * 100) + '%)' }
+          }
+        }
+      }
+    });
+  }
+
+  // ===== Unified month navigation =====
+  // ONE month control drives everything: KPI cards, Money Map, Spending-by-category chart,
+  // and the daily Calendar all move together. Per-month results are cached so swiping back and
+  // forth is instant, and neighbouring months are prefetched so the next swipe has no wait.
+  let monthOffset = 0;
+  const monthCache = new Map();   // offset -> { summary, breakdown, daily }
+
+  async function fetchMonth(off) {
+    if (monthCache.has(off)) return monthCache.get(off);
+    const [summary, breakdown, daily] = await Promise.all([
+      callWebhook('month_summary', { offset: off }),
+      callWebhook('category_breakdown', { status_filter: catStatus, offset: off }).catch(() => ({ categories: [] })),
+      callWebhook('month_daily', { offset: off }).catch(() => null)
+    ]);
+    const data = { summary, breakdown, daily };
+    if (summary) monthCache.set(off, data);   // only cache complete responses
+    return data;
+  }
+  function renderMonth(data) {
+    if (!data) return;
+    if (data.summary) { renderKpi(data.summary); renderMoneyMap(data.summary, data.breakdown); }
+    if (data.breakdown) renderCategoryChart(data.breakdown);
+    if (data.daily) renderCalendar(data.daily);
+  }
+  function prefetchAdjacent() {
+    [monthOffset - 1, monthOffset + 1].forEach(function (o) { if (!monthCache.has(o)) fetchMonth(o).catch(function () {}); });
+  }
+  // Load the current month. force=true bypasses/refreshes the cache (used after edits + manual refresh).
+  async function loadMonthView(force) {
+    if (force) monthCache.delete(monthOffset);
+    try { renderMonth(await fetchMonth(monthOffset)); prefetchAdjacent(); }
+    catch (e) { showToast('Load failed: ' + e.message, 'error'); }
+  }
+  // After any write, month data is stale — drop the cache so the next render is fresh.
+  function invalidateMonths() { monthCache.clear(); }
+  // Calendar/day flows call this after paying or editing: refresh the whole current month view.
+  async function loadCalendar() { await loadMonthView(true); }
+
+  // Smooth directional slide: old month exits one way, the new month slides in from the other side.
+  // If the month is cached the render is instant, so the slide is the only delay.
+  let monthAnimating = false;
+  function navMonth(delta) {
+    if (monthAnimating) return;
+    monthOffset += delta;
+    const grid = document.getElementById('kpi-grid');
+    const render = function () { return loadMonthView(); };
+    if (!grid) { render(); return; }
+    monthAnimating = true;
+    const outClass = delta > 0 ? 'kpi-out-left' : 'kpi-out-right';
+    const inClass = delta > 0 ? 'kpi-in-right' : 'kpi-in-left';
+    grid.classList.add(outClass);
+    setTimeout(function () {
+      Promise.resolve(render()).finally(function () {
+        grid.classList.remove(outClass);
+        grid.classList.add('kpi-noanim', inClass);
+        void grid.offsetWidth;                 // reflow so the slide-in animates from the entering side
+        grid.classList.remove('kpi-noanim', inClass);
+        setTimeout(function () { monthAnimating = false; }, 210);
+      });
+    }, 150);
+  }
+  // Both the KPI panel and the calendar drive the same unified navigator.
+  function kpiNav(delta) { navMonth(delta); }
+  function calNav(delta) { navMonth(delta); }
+
+  function renderCalendar(data) {
+    const el = document.getElementById('calendar');
+    if (!el || !data) return;
+    const t = document.getElementById('cal-title'); if (t) t.textContent = data.month || 'This month';
+    const dow = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+    let html = dow.map(function (d) { return '<div class="cal-dow">' + d + '</div>'; }).join('');
+    for (let i = 0; i < (data.firstDow || 0); i++) html += '<div class="cal-cell empty"></div>';
+    const mm = String(data.monthNum || 1).padStart(2, '0');
+    window.__DAILY = data;
+    (data.cells || []).forEach(function (c) {
+      const today = (c.day === data.today) ? ' cal-today' : '';
+      const hasPend = (c.pending || 0) > 0;
+      const ds = data.year + '-' + mm + '-' + String(c.day).padStart(2, '0');
+      html += '<div class="cal-cell' + today + (hasPend ? ' cal-haspend' : '') + '" onclick="openDayDetail(\'' + ds + '\',' + c.day + ')">' +
+        '<div class="cal-day' + (hasPend ? ' pend' : '') + '">' + c.day + '</div>' +
+        (c.income ? '<div class="cal-in">+' + pesoShort(c.income) + '</div>' : '') +
+        (c.expense ? '<div class="cal-out">-' + pesoShort(c.expense) + '</div>' : '') +
+        (hasPend ? '<div class="cal-pend">' + pesoShort(c.pending) + '</div>' : '') +
+        '</div>';
+    });
+    el.innerHTML = html;
+  }
+
+  let __DAY_CTX = null;
+  function openDayDetail(dateStr, day) {
+    logEvent('calendar_day', { date: dateStr });
+    __DAY_CTX = dateStr;
+    const daily = window.__DAILY;
+    const cell = daily && (daily.cells || []).filter(function (c) { return c.day === day; })[0];
+    const items = (cell && cell.items) ? cell.items : null;
+    const dd = new Date(dateStr + 'T00:00:00');
+    const title = document.getElementById('day-title');
+    if (title) title.textContent = dd.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+    const body = document.getElementById('day-body');
+    if (items === null) {
+      body.innerHTML = '<div class="upcoming-empty" style="padding:18px;">No detail for this day yet. Add an entry below.</div>';
+    } else {
+      const pend = items.filter(function (it) { return !/paid|cancel/i.test(it.status); });
+      const paid = items.filter(function (it) { return /paid/i.test(it.status); });
+      let h = '';
+      if (pend.length) { h += '<div class="day-sec">Due / pending</div>' + pend.map(function (it) { return dayRow(it, dateStr, true); }).join(''); }
+      if (paid.length) { h += '<div class="day-sec">Logged</div>' + paid.map(function (it) { return dayRow(it, dateStr, false); }).join(''); }
+      body.innerHTML = h || '<div class="upcoming-empty" style="padding:18px;">Nothing logged on this day.</div>';
+    }
+    document.getElementById('day-modal').classList.add('open');
+  }
+  function dayRow(it, dateStr, pending) {
+    const amtColor = it.income ? '#8BBF9F' : (pending ? '#E8B872' : '#E07856');
+    const sign = it.income ? '+' : '-';
+    const enc = encodeURIComponent(it.item), denc = encodeURIComponent(dateStr);
+    const rown = (it.row !== undefined && it.row !== null) ? it.row : '';
+    return '<div class="day-row" data-item="' + enc + '" data-date="' + denc + '" data-amount="' + (it.amount || 0) + '" data-row="' + rown + '" data-pending="' + (pending ? '1' : '0') + '">' +
+      '<div class="swipe-action paid" aria-hidden="true"><span class="sa-label">Paid</span></div>' +
+      '<div class="swipe-action del" aria-hidden="true"><span class="sa-label">Delete</span></div>' +
+      '<div class="day-row-inner">' +
+        '<div class="day-row-main"><div class="day-row-name">' + escapeHtml(it.item) + '</div>' +
+        '<div class="day-row-cat">' + escapeHtml(it.category || '') + (pending ? ' · ' + escapeHtml(it.status) : '') + '</div></div>' +
+        '<div class="day-row-amt" style="color:' + amtColor + '">' + sign + pesoShort(it.amount) + '</div>' +
+        (pending ? '<button class="pay-btn" onclick="payFromCalendar(\'' + enc + '\',\'' + denc + '\',' + (it.amount || 0) + ',event)">Pay</button>' : '') +
+      '</div>' +
+      '</div>';
+  }
+  function closeDayDetail() { const m = document.getElementById('day-modal'); if (m) m.classList.remove('open'); }
+  async function dayDetailNav(delta) {
+    if (!__DAY_CTX) return;
+    const d = new Date(__DAY_CTX + 'T00:00:00'); d.setDate(d.getDate() + delta);
+    const y = d.getFullYear(), m = d.getMonth(), day = d.getDate();
+    const ds = y + '-' + String(m + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+    const daily = window.__DAILY;
+    const dailyMonth = daily ? (daily.year + '-' + String(daily.monthNum).padStart(2, '0')) : '';
+    const targetMonth = y + '-' + String(m + 1).padStart(2, '0');
+    if (dailyMonth !== targetMonth) {
+      const nowD = new Date();
+      monthOffset = (y - nowD.getFullYear()) * 12 + (m - nowD.getMonth());
+      await loadCalendar();
+    }
+    openDayDetail(ds, day);
+  }
+  function addEntryForDay() {
+    const d = __DAY_CTX; closeDayDetail(); openCustomLog();
+    if (d) { document.getElementById('form-date').value = d; document.querySelector('#custom-modal .modal-title').textContent = 'Add · ' + d; }
+  }
+  async function payFromCalendar(enc, denc, amount, ev) {
+    if (ev) ev.stopPropagation();
+    const item = decodeURIComponent(enc), date = decodeURIComponent(denc);
+    if (!confirm('Mark "' + item + '" as Paid?\n\n' + peso(amount) + (date ? ' · ' + date : ''))) return;
+    try {
+      await callWebhook('update_master_log_status', { search: item, date: date, status: 'Paid' });
+      showToast('✓ Paid, ' + item, 'success');
+      closeDayDetail(); closeOverdue();
+      await refreshAll();
+    } catch (e) { showToast('Failed: ' + e.message, 'error'); }
+  }
+  async function daySwipeSettle(el, action) {
+    const inner = el.querySelector('.day-row-inner');
+    const item = decodeURIComponent(el.getAttribute('data-item') || '');
+    const date = decodeURIComponent(el.getAttribute('data-date') || '');
+    const rown = el.getAttribute('data-row') || '';
+    const paid = (action === 'paid');
+    logEvent(paid ? 'swipe_paid' : 'swipe_delete');
+    el.classList.add(paid ? 'show-paid' : 'show-del');
+    if (inner) { inner.style.transition = 'transform 0.24s cubic-bezier(.4,0,.2,1)'; inner.style.transform = 'translateX(' + (paid ? '100%' : '-100%') + ')'; }
+    try {
+      const h = el.offsetHeight; el.style.height = h + 'px'; el.style.overflow = 'hidden'; void el.offsetHeight;
+      el.style.transition = 'height 0.26s ease 0.15s, opacity 0.26s ease 0.15s'; el.style.height = '0px'; el.style.opacity = '0';
+    } catch (e) {}
+    try {
+      if (paid) {
+        await callWebhook('update_master_log_status', { search: item, date: date, status: 'Paid' });
+        showToast('✓ Paid, ' + item, 'success');
+      } else {
+        if (rown) await callWebhook('delete_master_log_row', { row: parseInt(rown), expect_item: item });
+        else await callWebhook('update_master_log_status', { search: item, date: date, status: 'Cancelled' });
+        showToast('🗑 Deleted, ' + item, 'success');
+      }
+      setTimeout(function () { closeDayDetail(); closeOverdue(); refreshAll(); }, 440);
+    } catch (e) {
+      if (inner) { inner.style.transition = ''; inner.style.transform = ''; }
+      el.classList.remove('show-paid', 'show-del');
+      el.style.height = ''; el.style.opacity = ''; el.style.overflow = ''; el.style.transition = '';
+      showToast('Failed: ' + e.message, 'error');
+    }
+  }
+  function openOverdue() {
+    const s = window.__SUMMARY || {};
+    const items = s.overdue_items || [];
+    const body = document.getElementById('overdue-body');
+    if (!items.length) {
+      body.innerHTML = '<div class="upcoming-empty" style="padding:20px;">✓ Nothing overdue. You are all caught up.</div>';
+    } else {
+      body.innerHTML = '<div class="day-sec">Overdue · ' + peso(s.expenses_overdue || 0) + '</div>' + items.map(function (it) {
+        const enc = encodeURIComponent(it.item || ''), denc = encodeURIComponent(it.date || '');
+        return '<div class="day-row"><div class="day-row-main"><div class="day-row-name">' + escapeHtml(it.item || '') + '</div>' +
+          (it.date ? '<div class="day-row-cat">due ' + escapeHtml(it.date) + '</div>' : '') + '</div>' +
+          '<div class="day-row-amt" style="color:#E0654E">' + pesoShort(it.amount || 0) + '</div>' +
+          (it.date ? '<button class="pay-btn" onclick="payFromCalendar(\'' + enc + '\',\'' + denc + '\',' + (it.amount || 0) + ',event)">Pay</button>' : '') +
+          '</div>';
+      }).join('');
+    }
+    document.getElementById('overdue-modal').classList.add('open');
+  }
+  function closeOverdue() { const m = document.getElementById('overdue-modal'); if (m) m.classList.remove('open'); }
+
+  async function setChartMonths(n) {
+    chartMonths = n;
+    document.querySelectorAll('#chart-filter .filter-chip').forEach(c => c.classList.remove('active'));
+    document.querySelector(`#chart-filter .filter-chip[data-months="${n}"]`).classList.add('active');
+    try {
+      const history = await callWebhook('monthly_history', { months: n });
+      renderMonthlyChart(history.months || []);
+    } catch (err) {
+      showToast('Chart load failed: ' + err.message, 'error');
+    }
+  }
+
+  async function setCatStatus(s) {
+    catStatus = s;
+    document.querySelectorAll('.filter-chip[data-cat-status]').forEach(c => c.classList.remove('active'));
+    document.querySelector(`.filter-chip[data-cat-status="${s}"]`).classList.add('active');
+    invalidateMonths();   // cached breakdowns used the old status filter
+    try {
+      const breakdown = await callWebhook('category_breakdown', { status_filter: s, offset: monthOffset });
+      renderCategoryChart(breakdown);
+    } catch (err) {
+      showToast('Category load failed: ' + err.message, 'error');
+    }
+  }
+
+  async function refreshAll() {
+    const refreshBtn = document.getElementById('refresh-btn');
+    refreshBtn.classList.add('spinning');
+
+    const cached = readCache();
+    if (cached && cached.data) {
+      // Instant paint from the last saved snapshot (always the current month).
+      if (monthOffset === 0) renderMonth({ summary: cached.data.summary, breakdown: cached.data.categories, daily: cached.data.daily });
+      if (cached.data.upcoming) renderUpcoming(cached.data.upcoming);
+      if (cached.data.history) renderMonthlyChart(cached.data.history);
+    }
+
+    try {
+      invalidateMonths();   // manual refresh: pull fresh month data
+      const [upcoming, history] = await Promise.all([
+        callWebhook('list_upcoming', { days: 45 }),
+        callWebhook('monthly_history', { months: chartMonths }).catch(() => ({ months: [] }))
+      ]);
+      const data = await fetchMonth(monthOffset);   // month_summary + category_breakdown + month_daily
+      renderUpcoming(upcoming.items || []);
+      if (history.months) renderMonthlyChart(history.months);
+      renderMonth(data);
+      prefetchAdjacent();
+      // Boot snapshot is always the current month, so only cache when viewing it.
+      if (monthOffset === 0) writeCache({ summary: data.summary, upcoming: upcoming.items, history: history.months, categories: data.breakdown, daily: data.daily });
+    } catch (err) {
+      showToast('Connection failed: ' + err.message, 'error');
+      console.error(err);
+    } finally {
+      refreshBtn.classList.remove('spinning');
+    }
+  }
+
+  // Quick tiles are shortcuts: pre-fill the form (amount editable) and let the user confirm/adjust before logging.
+  // Instant one-tap log (no form), used by the Gas tile.
+  function quickLog(item, category, amount) {
+    logEvent('quick_log', { item: item });
+    openCustomLog();
+    document.getElementById('form-item').value = item;
+    document.getElementById('form-category').value = category;
+    document.getElementById('form-amount').value = amount;
+    document.querySelector('#custom-modal .modal-title').textContent = 'Quick Log, edit & confirm';
+    const amt = document.getElementById('form-amount');
+    setTimeout(function () { try { amt.focus(); amt.select(); } catch (e) {} }, 60);
+  }
+
+  function openCustomLog() {
+    EDIT_CTX = null;
+    document.getElementById('form-date').value = new Date().toISOString().slice(0, 10);
+    document.getElementById('form-item').value = '';
+    document.getElementById('form-category').value = '';
+    document.getElementById('form-amount').value = '';
+    document.getElementById('form-notes').value = '';
+    document.getElementById('form-payment').value = 'GCASH';
+    document.getElementById('form-status').value = 'Paid';
+    LOG_RECURRING = false;
+    const rt0 = document.getElementById('recurring-toggle'); if (rt0) { rt0.classList.remove('on'); rt0.textContent = '🔁 Monthly recurring · OFF'; }
+    setLogType('expense');
+    document.querySelector('#custom-modal .modal-title').textContent = 'Log Transaction';
+    document.getElementById('form-submit').textContent = 'Log Transaction';
+    document.getElementById('custom-modal').classList.remove('editing');
+    document.getElementById('custom-modal').classList.add('open');
+  }
+  function closeCustomLog() {
+    EDIT_CTX = null;
+    document.getElementById('custom-modal').classList.remove('open', 'editing');
+  }
+
+  function comingSoon(title, msg) {
+    logEvent('coming_soon', { title: title });
+    document.getElementById('soon-title').textContent = title;
+    document.getElementById('soon-msg').textContent = msg;
+    document.getElementById('soon-modal').classList.add('open');
+  }
+
+  // ===== Install-to-home-screen (PWA) =====
+  let deferredPrompt = null;
+  function isStandalone() {
+    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  }
+  function showInstallUI() {
+    if (isStandalone()) return;
+    const sec = document.getElementById('install-section'); if (sec) sec.style.display = '';
+    // Only nudge with the bottom banner on the live dashboard, never over an onboarding / lock overlay
+    const overlay = ['consent-screen', 'install-screen', 'config-screen', 'lock-screen', 'expired-screen'].some(function (id) { const e = document.getElementById(id); return e && e.classList.contains('open'); });
+    const am = document.getElementById('app-main');
+    const dashVisible = am && am.style.display !== 'none';
+    const b = document.getElementById('install-banner');
+    if (b && dashVisible && !overlay && localStorage.getItem('ib_dismissed') !== '1') b.classList.add('show');
+  }
+  function hideInstallUI() {
+    const b = document.getElementById('install-banner'); if (b) b.classList.remove('show');
+    const sec = document.getElementById('install-section'); if (sec) sec.style.display = 'none';
+  }
+  function dismissInstall() {
+    try { localStorage.setItem('ib_dismissed', '1'); } catch (e) {}
+    const b = document.getElementById('install-banner'); if (b) b.classList.remove('show');
+  }
+  function isInAppBrowser() { return /FBAN|FBAV|FB_IAB|Instagram|Messenger|Line\/|Twitter|GSA\/|; wv\)/i.test(navigator.userAgent || ''); }
+  function openInChrome() {
+    try {
+      const noScheme = location.href.replace(/^https?:\/\//, '');
+      window.location.href = 'intent://' + noScheme + '#Intent;scheme=https;package=com.android.chrome;end';
+    } catch (e) {}
+  }
+  async function promptInstall() {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      try { await deferredPrompt.userChoice; } catch (e) {}
+      deferredPrompt = null; hideInstallUI();
+      return;
+    }
+    const ua = navigator.userAgent || '';
+    if (isInAppBrowser() && /Android/i.test(ua)) { showToast('Opening in Chrome to install. If nothing happens, tap the menu above and choose Open in Chrome.', 'success'); setTimeout(openInChrome, 700); return; }
+    if (/iPhone|iPad|iPod/i.test(ua)) { showToast('Tap the Share icon, then choose Add to Home Screen.', 'success'); return; }
+    showToast('Open your browser menu and tap Install app or Add to Home Screen.', 'success');
+  }
+  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); deferredPrompt = e; showInstallUI(); });
+  window.addEventListener('appinstalled', function () { deferredPrompt = null; hideInstallUI(); const is = document.getElementById('install-screen'); if (is && is.classList.contains('open')) { showToast('Installed. Continuing to the demo...', 'success'); setTimeout(proceedAfterConsent, 700); } });
+  function confirmInstall() {
+    hideInstallUI();   // hide the bottom banner so it doesn't stack under the confirm sheet
+    if (isInAppBrowser() && /Android/i.test(navigator.userAgent || '')) { showToast('Opening in Chrome to install. If nothing happens, tap the menu above and choose Open in Chrome.', 'success'); setTimeout(openInChrome, 700); return; }
+    const m = document.getElementById('install-confirm'); if (m) m.classList.add('open');
+  }
+  function closeInstallConfirm() { const m = document.getElementById('install-confirm'); if (m) m.classList.remove('open'); }
+  function doInstallConfirmed() { closeInstallConfirm(); promptInstall(); }
+  // Always surface the Settings install button unless already installed (standalone).
+  window.addEventListener('load', function () { const s = document.getElementById('install-section'); if (s) s.style.display = isStandalone() ? 'none' : ''; });
+
+  // ===== Form: income/expense toggle + monthly-recurring =====
+  let LOG_TYPE = 'expense';
+  let LOG_RECURRING = false;
+  function setLogType(t, el) {
+    LOG_TYPE = (t === 'income') ? 'income' : 'expense';
+    const btns = document.querySelectorAll('#type-seg .seg-btn');
+    btns.forEach(function (b) { b.classList.remove('active'); });
+    if (el) { el.classList.add('active'); }
+    else { btns.forEach(function (b) { if (b.textContent.trim().toLowerCase() === LOG_TYPE) b.classList.add('active'); }); }
+    const catSel = document.getElementById('form-category');
+    const catRow = catSel ? catSel.closest('.form-row') : null;
+    if (LOG_TYPE === 'income') {
+      if (catSel) catSel.value = 'Money ++';
+      if (catRow) catRow.style.display = 'none';
+    } else {
+      if (catRow) catRow.style.display = '';
+      if (catSel && catSel.value === 'Money ++') catSel.value = '';
+    }
+  }
+  function toggleRecurring() {
+    LOG_RECURRING = !LOG_RECURRING;
+    const rt = document.getElementById('recurring-toggle');
+    if (rt) { rt.classList.toggle('on', LOG_RECURRING); rt.textContent = '🔁 Monthly recurring · ' + (LOG_RECURRING ? 'ON' : 'OFF'); }
+  }
+
+  // ===== Income / Expenses MTD ledger popup =====
+  async function openLedger(type) {
+    logEvent('view_ledger', { type: type });
+    const m = document.getElementById('ledger-modal');
+    document.getElementById('ledger-title').textContent = (type === 'income') ? 'Money Received' : 'Money Spent';
+    document.getElementById('ledger-body').innerHTML = '<div class="upcoming-empty" style="padding:16px;">Loading…</div>';
+    m.classList.add('open');
+    try {
+      const res = await callWebhook('month_transactions', { type: type });
+      renderLedger(res, type);
+    } catch (e) {
+      document.getElementById('ledger-body').innerHTML = '<div class="upcoming-empty" style="padding:16px;">Failed: ' + e.message + '</div>';
+    }
+  }
+  function closeLedger() { const m = document.getElementById('ledger-modal'); if (m) m.classList.remove('open'); }
+  function renderLedger(res, type) {
+    const body = document.getElementById('ledger-body');
+    const months = (res && res.months) || [];
+    const sign = (type === 'income') ? '+' : '−';
+    const col = (type === 'income') ? '#8BBF9F' : '#E07856';
+    let html = '';
+    months.forEach(function (m) {
+      html += '<div class="led-month">' + m.label + '<span class="led-mtotal">' + sign + peso(m.total) + '</span></div>';
+      if (!m.items || !m.items.length) { html += '<div class="led-empty">Nothing logged.</div>'; return; }
+      m.items.forEach(function (it) {
+        html += '<div class="led-row"><div class="led-info"><div class="led-item">' + escapeHtml(it.item || '-') + '</div><div class="led-meta">' + escapeHtml(it.date || '') + ' · ' + escapeHtml(it.category || '') + '</div></div><div class="led-amt" style="color:' + col + ';">' + sign + peso(it.amount) + '</div></div>';
+      });
+    });
+    body.innerHTML = html || '<div class="upcoming-empty" style="padding:16px;">No data.</div>';
+  }
+
+  async function submitCustomLog(e) {
+    e.preventDefault();
+    const submitBtn = document.getElementById('form-submit');
+    const editing = !!EDIT_CTX;
+    const amt = parseFloat(document.getElementById('form-amount').value) || 0;
+    submitBtn.disabled = true;
+    submitBtn.textContent = editing ? 'Saving…' : 'Logging...';
+    try {
+      if (editing) {
+        // Edit an existing row: send only the known/editable fields so the
+        // webhook preserves payment_method + notes (not shown in edit mode).
+        await callWebhook('update_master_log_row', {
+          row: EDIT_CTX.row,
+          expect_item: EDIT_CTX.expect_item,
+          date: document.getElementById('form-date').value,
+          item: document.getElementById('form-item').value.trim(),
+          category: document.getElementById('form-category').value,
+          amount: amt,
+          status: document.getElementById('form-status').value
+        });
+      } else {
+        const isIncome = (LOG_TYPE === 'income');
+        const category = isIncome ? 'Money ++' : document.getElementById('form-category').value;
+        const item = document.getElementById('form-item').value.trim();
+        const dateStr = document.getElementById('form-date').value;
+        let notes = document.getElementById('form-notes').value.trim();
+        if (LOG_RECURRING) notes = (notes ? notes + ' · ' : '') + '[Monthly recurring]';
+        await callWebhook('add_master_log_row', {
+          date: dateStr,
+          item: item,
+          category: category,
+          amount: amt,
+          payment_method: document.getElementById('form-payment').value,
+          status: document.getElementById('form-status').value,
+          notes: notes
+        });
+        logEvent('log_added', { type: LOG_TYPE, category: category, amount: amt });
+        if (LOG_RECURRING && !isIncome) {
+          const dd = parseInt((dateStr || '').slice(8, 10)) || 1;
+          try { await callWebhook('add_payable', { item: item, amount: amt, due_day: dd, category: category, status: 'Pending' }); } catch (e2) {}
+        }
+      }
+      closeCustomLog();
+      showToast(editing ? '✓ Changes saved' : `✓ Logged ${peso(amt)}`, 'success');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Log Transaction';
+      await refreshAll();
+    } catch (err) {
+      showToast('Failed: ' + err.message, 'error');
+      submitBtn.disabled = false;
+      submitBtn.textContent = editing ? 'Save Changes' : 'Log Transaction';
+    }
+  }
+
+  // ===== PIN keypad =====
+  function updatePinDots(pin, dotsId) {
+    const dots = document.querySelectorAll(`#${dotsId} .pin-dot`);
+    dots.forEach((d, i) => {
+      d.classList.remove('filled', 'error');
+      if (i < pin.length) d.classList.add('filled');
+    });
+  }
+
+  async function pinPress(digit) {
+    if (currentPin.length >= 4) return;
+    currentPin += digit;
+    updatePinDots(currentPin, 'pin-dots');
+    if (currentPin.length === 4) {
+      await tryUnlock();
+    }
+  }
+
+  function pinBackspace() {
+    currentPin = currentPin.slice(0, -1);
+    updatePinDots(currentPin, 'pin-dots');
+  }
+
+  async function tryUnlock() {
+    const blob = JSON.parse(localStorage.getItem(STORAGE_KEY_CONFIG));
+    try {
+      const decrypted = await decryptConfig(currentPin, blob);
+      CFG = decrypted;
+      clearFailCount();
+      sessionPin = currentPin;   // in-memory only, so Settings/prompt can enroll biometrics this session
+      currentPin = '';
+      updatePinDots('', 'pin-dots');
+      enterApp();
+      maybeOfferBiometrics();
+    } catch (err) {
+      const fails = incrementFailCount();
+      const dots = document.querySelectorAll('#pin-dots .pin-dot');
+      dots.forEach(d => d.classList.add('error'));
+      const remaining = MAX_PIN_ATTEMPTS - fails;
+      if (fails >= MAX_PIN_ATTEMPTS) {
+        showToast('Too many failed attempts. Wiping local data.', 'error');
+        setTimeout(() => {
+          localStorage.removeItem(STORAGE_KEY_CONFIG);
+          localStorage.removeItem(STORAGE_KEY_CACHE);
+          clearFailCount();
+          location.reload();
+        }, 1500);
+      } else {
+        document.getElementById('lock-sub').textContent = `Wrong PIN. ${remaining} attempt${remaining === 1 ? '' : 's'} remaining.`;
+        setTimeout(() => {
+          currentPin = '';
+          updatePinDots('', 'pin-dots');
+        }, 400);
+      }
+    }
+  }
+
+  // ===== PIN setup =====
+  function setupPinPress(digit) {
+    if (setupPhase === 'enter') {
+      if (setupPin1.length >= 4) return;
+      setupPin1 += digit;
+      updatePinDots(setupPin1, 'setup-pin-dots');
+      if (setupPin1.length === 4) {
+        setupPhase = 'confirm';
+        document.getElementById('setup-pin-status').textContent = 'Re-enter PIN to confirm';
+        setTimeout(() => updatePinDots('', 'setup-pin-dots'), 200);
+      }
+    } else if (setupPhase === 'confirm') {
+      if (setupPinConfirm.length >= 4) return;
+      setupPinConfirm += digit;
+      updatePinDots(setupPinConfirm, 'setup-pin-dots');
+      if (setupPinConfirm.length === 4) {
+        if (setupPinConfirm === setupPin1) {
+          finalizeSetup(setupPin1);
+        } else {
+          document.getElementById('setup-pin-status').textContent = "PINs don't match. Start over.";
+          const dots = document.querySelectorAll('#setup-pin-dots .pin-dot');
+          dots.forEach(d => d.classList.add('error'));
+          setTimeout(() => {
+            setupPin1 = '';
+            setupPinConfirm = '';
+            setupPhase = 'enter';
+            updatePinDots('', 'setup-pin-dots');
+            document.getElementById('setup-pin-status').textContent = 'Enter PIN';
+          }, 800);
+        }
+      }
+    }
+  }
+
+  function setupPinBackspace() {
+    if (setupPhase === 'enter') {
+      setupPin1 = setupPin1.slice(0, -1);
+      updatePinDots(setupPin1, 'setup-pin-dots');
+    } else {
+      setupPinConfirm = setupPinConfirm.slice(0, -1);
+      updatePinDots(setupPinConfirm, 'setup-pin-dots');
+    }
+  }
+
+  async function finalizeSetup(pin) {
+    try {
+      const blob = await encryptConfig(pin, pendingConfig);
+      localStorage.setItem(STORAGE_KEY_CONFIG, JSON.stringify(blob));
+      CFG = pendingConfig;
+      if (SANDBOX) startTrialIfNeeded();
+      pendingConfig = null;
+      setupPin1 = '';
+      setupPinConfirm = '';
+      sessionPin = pin;   // in-memory only, lets us offer biometric enrollment right after setup
+      clearFailCount();
+      document.getElementById('config-screen').classList.remove('open');
+      showToast('✓ Setup complete', 'success');
+      enterApp();
+      maybeOfferBiometrics();
+    } catch (err) {
+      showToast('Setup failed: ' + err.message, 'error');
+    }
+  }
+
+  function configStep1Next() {
+    if (SANDBOX) {
+      const nm = document.getElementById('cfg-url').value.trim();
+      if (!nm) { showToast('Enter your name', 'error'); return; }
+      try { localStorage.setItem('engine_demo_name', nm); } catch (e) {}
+      pendingConfig = { name: nm, url: 'sandbox://local', secret: 'sandbox' };
+      document.getElementById('config-step-1').style.display = 'none';
+      document.getElementById('config-step-2').style.display = 'block';
+      return;
+    }
+    const url = document.getElementById('cfg-url').value.trim();
+    const secret = document.getElementById('cfg-secret').value.trim();
+    if (!url || !url.startsWith('https://script.google.com/macros/s/')) {
+      showToast('URL must start with https://script.google.com/macros/s/', 'error');
+      return;
+    }
+    if (!secret || secret.length < 8) {
+      showToast('Secret looks too short, paste your full secret', 'error');
+      return;
+    }
+    pendingConfig = { url, secret };
+    document.getElementById('config-step-1').style.display = 'none';
+    document.getElementById('config-step-2').style.display = 'block';
+  }
+
+  // ===== Settings actions =====
+  function openSettings() {
+    const url = (CFG && CFG.url) || '';
+    const masked = url ? url.slice(0, 38) + '...' : '-';
+    document.getElementById('settings-webhook').textContent = masked;
+    document.getElementById('settings-modal').classList.add('open');
+  }
+  function closeSettings() { document.getElementById('settings-modal').classList.remove('open'); }
+
+  function copyMaskedSecret() {
+    showToast('Settings are read-only here for safety', 'success');
+  }
+
+  function reconfigureAccount() {
+    if (!confirm('Reconfigure the webhook URL and secret? Your PIN stays the same.')) return;
+    closeSettings();
+    // Re-show step 1 of config, pre-filled
+    document.getElementById('config-step-1').style.display = 'block';
+    document.getElementById('config-step-2').style.display = 'none';
+    document.getElementById('cfg-url').value = CFG.url || '';
+    document.getElementById('cfg-secret').value = '';
+    document.getElementById('config-screen').classList.add('open');
+    document.getElementById('app-main').style.display = 'none';
+    // After they save new config + re-enter PIN, app re-encrypts
+  }
+
+  function changePin() {
+    if (!confirm('Change your PIN? You will need to re-enter your current PIN to confirm.')) return;
+    showToast('To change PIN: tap Sign Out, then set up again', 'success');
+  }
+
+  function signOut() {
+    if (!confirm('Sign out and WIPE all data on this device? You will need to set up again to use the app.')) return;
+    localStorage.removeItem(STORAGE_KEY_CONFIG);
+    localStorage.removeItem(STORAGE_KEY_CACHE);
+    clearFailCount();
+    if (SANDBOX) {
+      // Full demo reset so the cover note + tour show again on the fresh start.
+      ['engine_demo_consent', 'engine_demo_consent_log', 'engine_demo_name', 'engine_demo_data', 'engine_demo_tour_done', 'engine_demo_until', 'engine_demo_events', 'engine_demo_lastopen', 'engine_demo_reset_v2', 'ib_dismissed'].forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} });
+    }
+    CFG = null;
+    location.reload();
+  }
+
+  // ===== Toast =====
+  let toastTimer = null;
+  function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show' + (type ? ' ' + type : '');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  // ===== App flow =====
+  function setHeaderDate() {
+    const d = new Date();
+    document.getElementById('header-date').textContent = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  }
+
+  function enterApp() {
+    document.getElementById('lock-screen').classList.remove('open');
+    document.getElementById('config-screen').classList.remove('open');
+    document.getElementById('app-main').style.display = 'block';
+    if (SANDBOX) {
+      applyDemoName(); logEvent('app_open'); reminderCheck();
+      if (!localStorage.getItem('engine_demo_tour_done')) { sbSave(sbSeed()); setTimeout(function () { startTour(false); }, 700); }
+    }
+    setHeaderDate();
+    refreshAll();
+  }
+
+  function showLock() {
+    document.getElementById('lock-screen').classList.add('open');
+    document.getElementById('app-main').style.display = 'none';
+    document.getElementById('lock-sub').textContent = 'Enter your 4-digit PIN to unlock';
+    updateBioUI();
+    if (bioEnrolled()) setTimeout(unlockWithBiometrics, 450);   // auto-prompt Face ID / fingerprint
+  }
+
+  function showConfig() {
+    document.getElementById('config-screen').classList.add('open');
+    document.getElementById('lock-screen').classList.remove('open');
+    document.getElementById('app-main').style.display = 'none';
+    document.getElementById('config-step-1').style.display = 'block';
+    document.getElementById('config-step-2').style.display = 'none';
+  }
+
+  function init() {
+    if (!window.crypto || !window.crypto.subtle) {
+      alert('This app requires a modern browser with Web Crypto support. Please use Chrome, Safari, or Edge.');
+      return;
+    }
+    if (SANDBOX) {
+      applySandboxUI();
+      // one-time: clear any old seeded demo data so every install starts truly at zero
+      try { if (localStorage.getItem('engine_demo_reset_v2') !== '1') { localStorage.removeItem('engine_demo_data'); localStorage.setItem('engine_demo_reset_v2', '1'); } } catch (e) {}
+      sandboxBoot();
+    } else {
+      const stored = localStorage.getItem(STORAGE_KEY_CONFIG);
+      if (!stored) { showConfig(); } else { showLock(); }
+    }
+    // Auto-refresh interval (only triggers when app is unlocked)
+    setInterval(() => { if (!document.hidden && CFG) refreshAll(); }, 5 * 60 * 1000);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden && CFG) refreshAll(); });
+  }
+
+  // Tap backdrop to close modal
+  document.getElementById('custom-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'custom-modal') closeCustomLog();
+  });
+  document.getElementById('day-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'day-modal') closeDayDetail();
+  });
+  (function () {
+    const body = document.getElementById('day-body'); if (!body) return;
+    let sw = null;
+    body.addEventListener('pointerdown', function (e) {
+      if (e.target.closest('button') || e.target.closest('a')) return;
+      const row = e.target.closest('.day-row'); if (!row) return;
+      sw = { el: row, inner: row.querySelector('.day-row-inner'), pending: row.getAttribute('data-pending') === '1', sx: e.clientX, sy: e.clientY, dx: 0, locked: false, hapt: false };
+    });
+    body.addEventListener('pointermove', function (e) {
+      if (!sw) return;
+      const dx = e.clientX - sw.sx, dy = e.clientY - sw.sy;
+      if (!sw.locked) {
+        if (Math.abs(dy) > 10 && Math.abs(dy) >= Math.abs(dx)) { sw = null; return; }
+        if (Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy) * 1.2) { sw.locked = true; sw.el.classList.add('swiping'); }
+        else return;
+      }
+      e.preventDefault();
+      if (dx > 0 && !sw.pending) { sw.dx = 0; if (sw.inner) sw.inner.style.transform = ''; sw.el.classList.remove('show-paid', 'show-del', 'armed'); return; }  // right=Pay only for pending
+      sw.dx = dx;
+      if (sw.inner) sw.inner.style.transform = 'translateX(' + dx + 'px)';
+      sw.el.classList.toggle('show-paid', dx > 0);
+      sw.el.classList.toggle('show-del', dx < 0);
+      const th = sw.el.offsetWidth * 0.4;
+      sw.el.classList.toggle('armed', Math.abs(dx) > th);
+      if (!sw.hapt && Math.abs(dx) > th) { sw.hapt = true; if (navigator.vibrate) { try { navigator.vibrate(10); } catch (er) {} } }
+      else if (sw.hapt && Math.abs(dx) <= th) { sw.hapt = false; }
+    });
+    function endDaySwipe() {
+      if (!sw || !sw.locked) { sw = null; return; }
+      const el = sw.el, inner = sw.inner, dx = sw.dx, th = el.offsetWidth * 0.4;
+      el.classList.remove('swiping', 'armed');
+      if (dx > th && sw.pending) daySwipeSettle(el, 'paid');
+      else if (dx < -th) daySwipeSettle(el, 'delete');
+      else { if (inner) inner.style.transform = ''; el.classList.remove('show-paid', 'show-del'); }
+      sw = null;
+    }
+    body.addEventListener('pointerup', endDaySwipe);
+    body.addEventListener('pointercancel', endDaySwipe);
+  })();
+  document.getElementById('overdue-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'overdue-modal') closeOverdue();
+  });
+  (function () {
+    const cal = document.getElementById('calendar'); if (!cal) return;
+    let sx = 0, sy = 0, on = false;
+    cal.addEventListener('touchstart', function (e) { if (e.touches.length !== 1) return; sx = e.touches[0].clientX; sy = e.touches[0].clientY; on = true; }, { passive: true });
+    cal.addEventListener('touchend', function (e) { if (!on) return; on = false; const t = e.changedTouches[0]; const dx = t.clientX - sx, dy = t.clientY - sy; if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) calNav(dx < 0 ? 1 : -1); });
+  })();
+  (function () {
+    const panel = document.getElementById('kpi-panel'); if (!panel) return;
+    let sx = 0, sy = 0, on = false;
+    panel.addEventListener('touchstart', function (e) { if (e.touches.length !== 1) return; sx = e.touches[0].clientX; sy = e.touches[0].clientY; on = true; }, { passive: true });
+    panel.addEventListener('touchend', function (e) { if (!on) return; on = false; const t = e.changedTouches[0]; const dx = t.clientX - sx, dy = t.clientY - sy; if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.2) kpiNav(dx < 0 ? 1 : -1); });
+  })();
+  document.getElementById('settings-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'settings-modal') closeSettings();
+  });
+
+  // Re-lock when app is hidden for >5 min (security feature)
+  let hiddenSince = null;
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      hiddenSince = Date.now();
+    } else if (hiddenSince && CFG) {
+      const elapsed = Date.now() - hiddenSince;
+      if (elapsed > 5 * 60 * 1000) {  // 5 minutes
+        CFG = null;
+        showLock();
+        showToast('Auto-locked after 5 min idle', 'success');
+      }
+      hiddenSince = null;
+    }
+  });
+
+  init();
+</script>
+
+</body>
+</html>
